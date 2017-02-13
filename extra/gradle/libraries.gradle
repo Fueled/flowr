@@ -1,0 +1,48 @@
+ext {
+
+    //app
+    compileSdk = 25
+    buildTools = "25.0.2"
+    minSdk = 16
+    targetSdk = 25
+    appId = "com.fueled.router.sample"
+
+    //android libraries
+    supportVersion = '25.1.1'
+
+    // Rx
+    rxJavaVersion = '2.0.4'
+    rxAndroidVersion = '2.0.1'
+
+    // dagger
+    daggerVersion = '2.8'
+    jsr250Version = "1.0"
+
+    //test libraries
+    junitVersion = '4.12'
+    tesetRunnerVersion = '0.5'
+    hamcrestVersion = '1.4-atlassian-1'
+    espressoVersion = '2.2.2'
+    mockitoVersion = '1.10.19'
+
+
+    libraries = [
+            appCompat            : "com.android.support:appcompat-v7:${supportVersion}",
+            designSupport        : "com.android.support:design:${supportVersion}",
+            vectorSupport        : "com.android.support:support-vector-drawable:${supportVersion}",
+
+            rxJava               : "io.reactivex.rxjava2:rxjava:${rxJavaVersion}",
+            rxAndroid            : "io.reactivex.rxjava2:rxandroid:${rxAndroidVersion}"
+    ]
+
+    testLibraries = [
+            junit             : "junit:junit:${junitVersion}",
+            supportAnnotations: "com.android.support:support-annotations:${supportVersion}",
+            testRunner        : "com.android.support.test:runner:${tesetRunnerVersion}",
+            testRule          : "com.android.support.test:rules:${tesetRunnerVersion}",
+            hamcrest          : "org.hamcrest:hamcrest-library:${hamcrestVersion}",
+            espresso          : "com.android.support.test.espresso:espresso-core:${espressoVersion}",
+            mockito           : "org.mockito:mockito-core:${mockitoVersion}"
+    ]
+
+}

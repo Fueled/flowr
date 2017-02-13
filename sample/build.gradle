@@ -1,0 +1,43 @@
+apply plugin: 'com.android.application'
+apply plugin: 'checkstyle'
+apply from: "../extra/checkstyle/checkstyle.gradle"
+
+android {
+    compileSdkVersion compileSdk
+    buildToolsVersion buildTools
+
+    defaultConfig {
+        applicationId appId
+        minSdkVersion minSdk
+        targetSdkVersion targetSdk
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    dataBinding {
+        enabled = true
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile project(':library')
+
+    compile libraries.appCompat
+    compile libraries.designSupport
+
+    compile libraries.rxJava
+    compile libraries.rxAndroid
+
+    testCompile testLibraries.junit
+}
