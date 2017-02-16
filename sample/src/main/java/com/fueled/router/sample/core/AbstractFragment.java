@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.fueled.router.AbstractRouterFragment;
 import com.fueled.router.ResultResponse;
+import com.fueled.router.Router;
 import com.fueled.router.sample.R;
 
 import io.reactivex.disposables.Disposable;

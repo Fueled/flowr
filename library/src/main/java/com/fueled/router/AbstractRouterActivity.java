@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatActivity;
  * Created by hussein@fueled.com on 13/02/2017.
  * Copyright (c) 2017 Fueled. All rights reserved.
  */
-public abstract class AbstractRouterActivity<T extends AbstractRouter> extends AppCompatActivity
+public abstract class AbstractRouterActivity<T extends Router> extends AppCompatActivity
         implements RouterScreen {
 
     public abstract T getRouter();

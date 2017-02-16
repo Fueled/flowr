@@ -6,10 +6,10 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.fueled.router.NavigationIconType;
+import com.fueled.router.Router;
 import com.fueled.router.ToolbarHandler;
 import com.fueled.router.sample.core.AbstractActivity;
 import com.fueled.router.sample.core.FragmentResultPublisherImpl;
-import com.fueled.router.sample.core.Router;
 import com.fueled.router.sample.databinding.ActivityMainBinding;
 
 
@@ -35,9 +35,7 @@ public class MainActivity extends AbstractActivity implements ToolbarHandler {
     @Override
     public Router getRouter() {
         if (router == null) {
-            router = new Router(R.id.main_container,
-                    this,
-                    this,
+            router = new Router(R.id.main_container, this, this, null,
                     FragmentResultPublisherImpl.getInstance());
         }
 

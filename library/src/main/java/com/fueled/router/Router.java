@@ -15,8 +15,8 @@ import android.view.View;
  * Created by hussein@fueled.com on 31/05/2016.
  * Copyright (c) 2016 Fueled. All rights reserved.
  */
-public abstract class AbstractRouter<T extends Fragment & RouterFragment> implements
-        FragmentManager.OnBackStackChangedListener, View.OnClickListener {
+public class Router implements FragmentManager.OnBackStackChangedListener,
+        View.OnClickListener {
 
     private final static String KEY_REQUEST_BUNDLE = "KEY_REQUEST_BUNDLE";
     private final static String KEY_FRAGMENT_ID = "KEY_FRAGMENT_ID";
@@ -29,7 +29,7 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
     private final FragmentsResultPublisher resultPublisher;
     private final int mainContainerId;
 
-    private T currentFragment;
+    private Fragment currentFragment;
 
     private boolean overrideBack;
     private String tagPrefix;
@@ -41,8 +41,8 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
      * @param mainContainerId the id of the container where the fragments should be displayed
      * @param screen          the fragment's parent screen
      */
-    public AbstractRouter(@IdRes int mainContainerId, RouterScreen screen,
-                          FragmentsResultPublisher resultPublisher) {
+    public Router(@IdRes int mainContainerId, RouterScreen screen,
+                  FragmentsResultPublisher resultPublisher) {
         this(mainContainerId, screen, null, null, resultPublisher);
     }
 
@@ -57,8 +57,8 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
      * @param resultPublisher the result publish to be used to publish results from fragments
      *                        that where opened for results.
      */
-    public AbstractRouter(@IdRes int mainContainerId, RouterScreen screen, String tagPrefix,
-                          FragmentsResultPublisher resultPublisher) {
+    public Router(@IdRes int mainContainerId, RouterScreen screen, String tagPrefix,
+                  FragmentsResultPublisher resultPublisher) {
         this(mainContainerId, screen, null, null, tagPrefix, resultPublisher);
     }
 
@@ -73,8 +73,8 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
      * @param resultPublisher the result publish to be used to publish results from fragments
      *                        that where opened for results.
      */
-    public AbstractRouter(@IdRes int mainContainerId, RouterScreen screen, ToolbarHandler toolbarHandler,
-                          DrawerHandler drawerHandler, FragmentsResultPublisher resultPublisher) {
+    public Router(@IdRes int mainContainerId, RouterScreen screen, ToolbarHandler toolbarHandler,
+                  DrawerHandler drawerHandler, FragmentsResultPublisher resultPublisher) {
         this(mainContainerId, screen, toolbarHandler, drawerHandler, "#id-", resultPublisher);
     }
 
@@ -91,9 +91,9 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
      * @param resultPublisher the result publish to be used to publish results from fragments
      *                        that where opened for results.
      */
-    public AbstractRouter(@IdRes int mainContainerId, RouterScreen screen, ToolbarHandler toolbarHandler,
-                          DrawerHandler drawerHandler, String tagPrefix,
-                          FragmentsResultPublisher resultPublisher) {
+    public Router(@IdRes int mainContainerId, RouterScreen screen, ToolbarHandler toolbarHandler,
+                  DrawerHandler drawerHandler, String tagPrefix,
+                  FragmentsResultPublisher resultPublisher) {
         this.resultPublisher = resultPublisher;
         this.mainContainerId = mainContainerId;
         this.tagPrefix = tagPrefix;
@@ -179,10 +179,13 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
         return tagPrefix;
     }
 
-    protected void displayFragment(Class<? extends T> fragmentClass, Bundle args,
-                                   boolean skipBackStack, boolean clearBackStack, boolean
-                                           replaceCurrentFragment, @AnimRes int enterAnim,
-                                   @AnimRes int exitAnim) {
+    protected <T extends Fragment & RouterFragment> void displayFragment(Class<T> fragmentClass,
+                                                                         Bundle args,
+                                                                         boolean skipBackStack,
+                                                                         boolean clearBackStack,
+                                                                         boolean replaceCurrentFragment,
+                                                                         @AnimRes int enterAnim,
+                                                                         @AnimRes int exitAnim) {
         try {
             if (clearBackStack) {
                 clearBackStack();
@@ -196,7 +199,7 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
                 transaction.remove(currentFragment).commit();
             }
 
-            T fragment = fragmentClass.newInstance();
+            Fragment fragment = fragmentClass.newInstance();
             fragment.setArguments(args);
 
             transaction = screen.getScreenFragmentManager().beginTransaction();
@@ -233,12 +236,11 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
                 exitAnim);
     }
 
-    @SuppressWarnings("unchecked")
-    private T retrieveCurrentFragment() {
-        T fragment = null;
+    private Fragment retrieveCurrentFragment() {
+        Fragment fragment = null;
 
         if (screen != null) {
-            fragment = (T) screen.getScreenFragmentManager()
+            fragment = screen.getScreenFragmentManager()
                     .findFragmentById(mainContainerId);
         }
 
@@ -249,8 +251,8 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
     public void onBackStackChanged() {
         currentFragment = retrieveCurrentFragment();
 
-        if (currentFragment != null) {
-            currentFragment.onPoppedBackFromStack();
+        if (currentFragment instanceof RouterFragment) {
+            ((RouterFragment) currentFragment).onPoppedBackFromStack();
         }
 
         syncScreenState();
@@ -323,7 +325,8 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
      * @return true if the event was handled by the fragment
      */
     public boolean onBackPressed() {
-        if (!overrideBack && currentFragment != null && currentFragment.onBackPressed()) {
+        if (!overrideBack && currentFragment instanceof RouterFragment &&
+                ((RouterFragment) currentFragment).onBackPressed()) {
             return true;
         }
 
@@ -332,7 +335,8 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
     }
 
     public void onNavigationIconClicked() {
-        if (currentFragment == null || !currentFragment.onNavigationIconClick()) {
+        if (!(currentFragment instanceof RouterFragment &&
+                ((RouterFragment) currentFragment).onNavigationIconClick())) {
             close();
         }
     }
@@ -351,7 +355,7 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
      *
      * @return the fragment currently being displayed
      */
-    public T getCurrentFragment() {
+    public Fragment getCurrentFragment() {
         return currentFragment;
     }
 
@@ -363,9 +367,9 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
         int screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
         int navigationBarColor = -1;
 
-        if (currentFragment != null) {
-            screenOrientation = currentFragment.getScreenOrientation();
-            navigationBarColor = currentFragment.getNavigationBarColor();
+        if (currentFragment instanceof RouterFragment) {
+            screenOrientation = ((RouterFragment) currentFragment).getScreenOrientation();
+            navigationBarColor = ((RouterFragment) currentFragment).getNavigationBarColor();
         }
 
         screen.setScreenOrientation(screenOrientation);
@@ -383,19 +387,19 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
         NavigationIconType iconType = NavigationIconType.HIDDEN;
         String title = null;
 
-        if (currentFragment != null) {
-            iconType = currentFragment.getNavigationIconType();
-            title = currentFragment.getTitle();
+        if (currentFragment instanceof RouterFragment) {
+            iconType = ((RouterFragment) currentFragment).getNavigationIconType();
+            title = ((RouterFragment) currentFragment).getTitle();
         }
 
         if (iconType == NavigationIconType.CUSTOM) {
-            toolbarHandler.setCustomNavigationIcon(currentFragment.getNavigationIcon());
+            toolbarHandler.setCustomNavigationIcon(((RouterFragment) currentFragment).getNavigationIcon());
         } else {
             toolbarHandler.setNavigationIcon(iconType);
         }
 
-        toolbarHandler.setToolbarVisible(
-                currentFragment == null || currentFragment.isToolbarVisible());
+        toolbarHandler.setToolbarVisible(!(currentFragment instanceof RouterFragment) ||
+                        ((RouterFragment) currentFragment).isToolbarVisible());
 
         toolbarHandler.setToolbarTitle(title != null ? title : "");
     }
@@ -405,8 +409,8 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
             return;
         }
 
-        drawerHandler.setDrawerEnabled(currentFragment == null || currentFragment
-                .isDrawerEnabled());
+        drawerHandler.setDrawerEnabled(!(currentFragment instanceof RouterFragment) ||
+                ((RouterFragment) currentFragment).isDrawerEnabled());
     }
 
     /**
@@ -415,7 +419,7 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
      * @param fragmentClass the class for the fragment to be displayed
      * @return a new {@link Builder} instance
      */
-    public Builder open(Class<? extends T> fragmentClass) {
+    public <T extends Fragment & RouterFragment> Builder open(Class<? extends T> fragmentClass) {
         return new Builder(fragmentClass);
     }
 
@@ -477,7 +481,7 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
     /**
      * This builder class is used to show a new fragment inside the current activity
      */
-    public class Builder {
+    public class Builder<T extends Fragment & RouterFragment> {
 
         private Class<? extends T> fragmentClass;
         private Bundle args;
@@ -549,7 +553,7 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
          * Displays the fragment using this builder configurations.
          */
         public void displayFragment() {
-            AbstractRouter.this.displayFragment(fragmentClass, args, skipBackStack, clearBackStack,
+            Router.this.displayFragment(fragmentClass, args, skipBackStack, clearBackStack,
                     replaceCurrentFragment, enterAnim, exitAnim);
         }
 
@@ -570,7 +574,7 @@ public abstract class AbstractRouter<T extends Fragment & RouterFragment> implem
                 args.putBundle(KEY_REQUEST_BUNDLE, getResultRequestBundle(fragmentId, requestCode));
             }
 
-            AbstractRouter.this.displayFragment(fragmentClass, args, skipBackStack, clearBackStack,
+            Router.this.displayFragment(fragmentClass, args, skipBackStack, clearBackStack,
                     replaceCurrentFragment, enterAnim, exitAnim);
         }
 
