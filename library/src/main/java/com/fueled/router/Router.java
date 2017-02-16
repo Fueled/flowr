@@ -10,6 +10,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.fueled.router.internal.TransactionData;
+
 
 /**
  * Created by hussein@fueled.com on 31/05/2016.
@@ -179,15 +181,9 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
         return tagPrefix;
     }
 
-    protected <T extends Fragment & RouterFragment> void displayFragment(Class<T> fragmentClass,
-                                                                         Bundle args,
-                                                                         boolean skipBackStack,
-                                                                         boolean clearBackStack,
-                                                                         boolean replaceCurrentFragment,
-                                                                         @AnimRes int enterAnim,
-                                                                         @AnimRes int exitAnim) {
+    protected <T extends Fragment & RouterFragment> void displayFragment(TransactionData<T> data) {
         try {
-            if (clearBackStack) {
+            if (data.isClearBackStack()) {
                 clearBackStack();
             }
 
@@ -195,23 +191,23 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
 
             currentFragment = retrieveCurrentFragment();
 
-            if (replaceCurrentFragment && skipBackStack && currentFragment != null) {
+            if (data.isReplaceCurrentFragment() && data.isSkipBackStack() && currentFragment != null) {
                 transaction.remove(currentFragment).commit();
             }
 
-            Fragment fragment = fragmentClass.newInstance();
-            fragment.setArguments(args);
+            Fragment fragment = data.getFragmentClass().newInstance();
+            fragment.setArguments(data.getArgs());
 
             transaction = screen.getScreenFragmentManager().beginTransaction();
 
-            if (!skipBackStack) {
+            if (!data.isSkipBackStack()) {
                 String id = tagPrefix + screen.getScreenFragmentManager().getBackStackEntryCount();
                 transaction.addToBackStack(id);
             }
 
-            setCustomAnimations(transaction, enterAnim, exitAnim);
+            setCustomAnimations(transaction, data.getEnterAnim(), data.getExitAnim());
 
-            if (replaceCurrentFragment && !skipBackStack) {
+            if (data.isReplaceCurrentFragment() && !data.isSkipBackStack()) {
                 transaction.replace(mainContainerId, fragment);
             } else {
                 transaction.add(mainContainerId, fragment);
@@ -420,7 +416,7 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
      * @return a new {@link Builder} instance
      */
     public <T extends Fragment & RouterFragment> Builder open(Class<? extends T> fragmentClass) {
-        return new Builder(fragmentClass);
+        return new Builder<>(fragmentClass);
     }
 
     /**
@@ -483,16 +479,11 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
      */
     public class Builder<T extends Fragment & RouterFragment> {
 
-        private Class<? extends T> fragmentClass;
-        private Bundle args;
-        private boolean skipBackStack = false;
-        private boolean clearBackStack = false;
-        private boolean replaceCurrentFragment = false;
-        private int enterAnim = getDefaultEnterAnimation();
-        private int exitAnim = getDefaultExitAnimation();
+        private TransactionData<T> data;
 
         public Builder(Class<? extends T> fragmentClass) {
-            this.fragmentClass = fragmentClass;
+            data = new TransactionData<>(fragmentClass, getDefaultEnterAnimation(),
+                    getDefaultExitAnimation());
         }
 
         /**
@@ -501,7 +492,7 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
          * @param args the construction arguments for this fragment.
          */
         public Builder setData(Bundle args) {
-            this.args = args;
+            data.setArgs(args);
             return this;
         }
 
@@ -509,7 +500,7 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
          * Specifies if this fragment should not be added to the back stack.
          */
         public Builder skipBackStack(boolean skipBackStack) {
-            this.skipBackStack = skipBackStack;
+            data.setSkipBackStack(skipBackStack);
             return this;
         }
 
@@ -517,7 +508,7 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
          * Specifies if the fragment manager back stack should be cleared.
          */
         public Builder clearBackStack(boolean clearBackStack) {
-            this.clearBackStack = clearBackStack;
+            data.setClearBackStack(clearBackStack);
             return this;
         }
 
@@ -525,7 +516,7 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
          * Specifies if this fragment should replace the current fragment.
          */
         public Builder replaceCurrentFragment(boolean replaceCurrentFragment) {
-            this.replaceCurrentFragment = replaceCurrentFragment;
+            data.setReplaceCurrentFragment(replaceCurrentFragment);
             return this;
         }
 
@@ -536,8 +527,8 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
          * @param exitAnim  the fragment exit animation.
          */
         public Builder setCustomTransactionAnimation(@AnimRes int enterAnim, @AnimRes int exitAnim) {
-            this.enterAnim = enterAnim;
-            this.exitAnim = exitAnim;
+            data.setEnterAnim(enterAnim);
+            data.setExitAnim(exitAnim);
             return this;
         }
 
@@ -553,8 +544,7 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
          * Displays the fragment using this builder configurations.
          */
         public void displayFragment() {
-            Router.this.displayFragment(fragmentClass, args, skipBackStack, clearBackStack,
-                    replaceCurrentFragment, enterAnim, exitAnim);
+            Router.this.displayFragment(data);
         }
 
         /**
@@ -567,15 +557,15 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
          */
         public void displayFragmentForResults(String fragmentId, int requestCode) {
             if (!TextUtils.isEmpty(fragmentId)) {
-                if (args == null) {
-                    args = new Bundle();
+                if (data.getArgs() == null) {
+                    data.setArgs(new Bundle());
                 }
 
-                args.putBundle(KEY_REQUEST_BUNDLE, getResultRequestBundle(fragmentId, requestCode));
+                data.getArgs().putBundle(KEY_REQUEST_BUNDLE,
+                        getResultRequestBundle(fragmentId, requestCode));
             }
 
-            Router.this.displayFragment(fragmentClass, args, skipBackStack, clearBackStack,
-                    replaceCurrentFragment, enterAnim, exitAnim);
+            Router.this.displayFragment(data);
         }
 
         private Bundle getResultRequestBundle(String fragmentId, int requestCode) {
