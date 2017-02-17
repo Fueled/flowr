@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.fueled.router.internal.TransactionData;
@@ -23,6 +24,8 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
     private final static String KEY_REQUEST_BUNDLE = "KEY_REQUEST_BUNDLE";
     private final static String KEY_FRAGMENT_ID = "KEY_FRAGMENT_ID";
     private final static String KEY_REQUEST_CODE = "KEY_REQUEST_CODE";
+
+    private final static String TAG = Router.class.getSimpleName();
 
     private RouterScreen screen;
     private ToolbarHandler toolbarHandler;
@@ -219,7 +222,7 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
 
             syncScreenState();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error while displaying fragment.", e);
         }
     }
 
