@@ -1,4 +1,4 @@
-package com.fueled.router;
+package com.fueled.flowr;
 
 import android.content.pm.ActivityInfo;
 import android.graphics.drawable.Drawable;
@@ -11,7 +11,7 @@ import java.util.UUID;
  * Created by hussein@fueled.com on 13/02/2017.
  * Copyright (c) 2017 Fueled. All rights reserved.
  */
-public abstract class AbstractRouterFragment extends Fragment implements RouterFragment {
+public abstract class AbstractFlowrFragment extends Fragment implements FlowrFragment {
 
     private static final String KEY_FRAGMENT_ID = "key_fragment_id";
 

@@ -1,15 +1,15 @@
-package com.fueled.router.internal;
+package com.fueled.flowr.internal;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import com.fueled.router.RouterFragment;
+import com.fueled.flowr.FlowrFragment;
 
 /**
  * Created by hussein@fueled.com on 16/02/2017.
  * Copyright (c) 2017 Fueled. All rights reserved.
  */
-public final class TransactionData<T  extends Fragment & RouterFragment> {
+public final class TransactionData<T  extends Fragment & FlowrFragment> {
 
     private Class<? extends T> fragmentClass;
     private Bundle args;

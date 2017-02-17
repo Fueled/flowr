@@ -1,10 +1,11 @@
-package com.fueled.router.sample;
+package com.fueled.flowr.sample;
 
 import android.databinding.DataBindingUtil;
 import android.view.View;
 
-import com.fueled.router.sample.core.AbstractFragment;
-import com.fueled.router.sample.databinding.FragmentViewBinding;
+import com.fueled.flowr.sample.core.AbstractFragment;
+import com.fueled.flowr.sample.databinding.FragmentViewBinding;
+import com.fueled.flowr.sample.R;
 
 /**
  * Created by hussein@fueled.com on 14/02/2017.

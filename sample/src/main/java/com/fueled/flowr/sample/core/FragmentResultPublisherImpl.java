@@ -1,7 +1,7 @@
-package com.fueled.router.sample.core;
+package com.fueled.flowr.sample.core;
 
-import com.fueled.router.FragmentsResultPublisher;
-import com.fueled.router.ResultResponse;
+import com.fueled.flowr.FragmentsResultPublisher;
+import com.fueled.flowr.ResultResponse;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;

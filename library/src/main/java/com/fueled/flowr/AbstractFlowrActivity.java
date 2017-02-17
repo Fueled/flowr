@@ -1,4 +1,4 @@
-package com.fueled.router;
+package com.fueled.flowr;
 
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -11,17 +11,17 @@ import android.support.v7.app.AppCompatActivity;
  * Created by hussein@fueled.com on 13/02/2017.
  * Copyright (c) 2017 Fueled. All rights reserved.
  */
-public abstract class AbstractRouterActivity<T extends Router> extends AppCompatActivity
-        implements RouterScreen {
+public abstract class AbstractFlowrActivity<T extends Flowr> extends AppCompatActivity
+        implements FlowrScreen {
 
-    public abstract T getRouter();
+    public abstract T getFlowr();
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        if (getRouter() != null) {
-            getRouter().onDestroy();
+        if (getFlowr() != null) {
+            getFlowr().onDestroy();
         }
     }
 
@@ -37,7 +37,7 @@ public abstract class AbstractRouterActivity<T extends Router> extends AppCompat
 
     @Override
     public void onBackPressed() {
-        if (getRouter() == null || !getRouter().onBackPressed()) {
+        if (getFlowr() == null || !getFlowr().onBackPressed()) {
             super.onBackPressed();
         }
     }

@@ -1,6 +1,10 @@
 apply plugin: 'com.android.library'
 apply plugin: 'checkstyle'
 apply from: "../extra/checkstyle/checkstyle_android_library.gradle"
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = 'com.github.fueled'
+version = '1.0.0'
 
 android {
     compileSdkVersion compileSdk

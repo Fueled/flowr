@@ -1,4 +1,4 @@
-package com.fueled.router;
+package com.fueled.flowr;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -11,23 +11,23 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
-import com.fueled.router.internal.TransactionData;
+import com.fueled.flowr.internal.TransactionData;
 
 
 /**
  * Created by hussein@fueled.com on 31/05/2016.
  * Copyright (c) 2016 Fueled. All rights reserved.
  */
-public class Router implements FragmentManager.OnBackStackChangedListener,
+public class Flowr implements FragmentManager.OnBackStackChangedListener,
         View.OnClickListener {
 
     private final static String KEY_REQUEST_BUNDLE = "KEY_REQUEST_BUNDLE";
     private final static String KEY_FRAGMENT_ID = "KEY_FRAGMENT_ID";
     private final static String KEY_REQUEST_CODE = "KEY_REQUEST_CODE";
 
-    private final static String TAG = Router.class.getSimpleName();
+    private final static String TAG = Flowr.class.getSimpleName();
 
-    private RouterScreen screen;
+    private FlowrScreen screen;
     private ToolbarHandler toolbarHandler;
     private DrawerHandler drawerHandler;
 
@@ -46,8 +46,8 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
      * @param mainContainerId the id of the container where the fragments should be displayed
      * @param screen          the fragment's parent screen
      */
-    public Router(@IdRes int mainContainerId, RouterScreen screen,
-                  FragmentsResultPublisher resultPublisher) {
+    public Flowr(@IdRes int mainContainerId, FlowrScreen screen,
+                 FragmentsResultPublisher resultPublisher) {
         this(mainContainerId, screen, null, null, resultPublisher);
     }
 
@@ -62,8 +62,8 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
      * @param resultPublisher the result publish to be used to publish results from fragments
      *                        that where opened for results.
      */
-    public Router(@IdRes int mainContainerId, RouterScreen screen, String tagPrefix,
-                  FragmentsResultPublisher resultPublisher) {
+    public Flowr(@IdRes int mainContainerId, FlowrScreen screen, String tagPrefix,
+                 FragmentsResultPublisher resultPublisher) {
         this(mainContainerId, screen, null, null, tagPrefix, resultPublisher);
     }
 
@@ -78,8 +78,8 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
      * @param resultPublisher the result publish to be used to publish results from fragments
      *                        that where opened for results.
      */
-    public Router(@IdRes int mainContainerId, RouterScreen screen, ToolbarHandler toolbarHandler,
-                  DrawerHandler drawerHandler, FragmentsResultPublisher resultPublisher) {
+    public Flowr(@IdRes int mainContainerId, FlowrScreen screen, ToolbarHandler toolbarHandler,
+                 DrawerHandler drawerHandler, FragmentsResultPublisher resultPublisher) {
         this(mainContainerId, screen, toolbarHandler, drawerHandler, "#id-", resultPublisher);
     }
 
@@ -96,9 +96,9 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
      * @param resultPublisher the result publish to be used to publish results from fragments
      *                        that where opened for results.
      */
-    public Router(@IdRes int mainContainerId, RouterScreen screen, ToolbarHandler toolbarHandler,
-                  DrawerHandler drawerHandler, String tagPrefix,
-                  FragmentsResultPublisher resultPublisher) {
+    public Flowr(@IdRes int mainContainerId, FlowrScreen screen, ToolbarHandler toolbarHandler,
+                 DrawerHandler drawerHandler, String tagPrefix,
+                 FragmentsResultPublisher resultPublisher) {
         this.resultPublisher = resultPublisher;
         this.mainContainerId = mainContainerId;
         this.tagPrefix = tagPrefix;
@@ -112,25 +112,25 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
     }
 
     /**
-     * Returns the {@link RouterScreen} used for this router.
+     * Returns the {@link FlowrScreen} used for this router.
      *
      * @return the router screen for this router
      */
-    protected RouterScreen getRouterScreen() {
+    protected FlowrScreen getRouterScreen() {
         return screen;
     }
 
     /**
-     * Sets the {@link RouterScreen} to be used for this router.
+     * Sets the {@link FlowrScreen} to be used for this router.
      *
-     * @param routerScreen the router screen to be used
+     * @param flowrScreen the router screen to be used
      */
-    protected void setRouterScreen(RouterScreen routerScreen) {
+    protected void setRouterScreen(FlowrScreen flowrScreen) {
         removeCurrentRouterScreen();
-        if (routerScreen != null) {
-            this.screen = routerScreen;
+        if (flowrScreen != null) {
+            this.screen = flowrScreen;
 
-            if (routerScreen.getScreenFragmentManager() != null) {
+            if (flowrScreen.getScreenFragmentManager() != null) {
                 screen.getScreenFragmentManager().addOnBackStackChangedListener(this);
                 currentFragment = retrieveCurrentFragment();
             }
@@ -184,7 +184,7 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
         return tagPrefix;
     }
 
-    protected <T extends Fragment & RouterFragment> void displayFragment(TransactionData<T> data) {
+    protected <T extends Fragment & FlowrFragment> void displayFragment(TransactionData<T> data) {
         try {
             if (data.isClearBackStack()) {
                 clearBackStack();
@@ -250,8 +250,8 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
     public void onBackStackChanged() {
         currentFragment = retrieveCurrentFragment();
 
-        if (currentFragment instanceof RouterFragment) {
-            ((RouterFragment) currentFragment).onPoppedBackFromStack();
+        if (currentFragment instanceof FlowrFragment) {
+            ((FlowrFragment) currentFragment).onPoppedBackFromStack();
         }
 
         syncScreenState();
@@ -324,8 +324,8 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
      * @return true if the event was handled by the fragment
      */
     public boolean onBackPressed() {
-        if (!overrideBack && currentFragment instanceof RouterFragment &&
-                ((RouterFragment) currentFragment).onBackPressed()) {
+        if (!overrideBack && currentFragment instanceof FlowrFragment &&
+                ((FlowrFragment) currentFragment).onBackPressed()) {
             return true;
         }
 
@@ -334,8 +334,8 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
     }
 
     public void onNavigationIconClicked() {
-        if (!(currentFragment instanceof RouterFragment &&
-                ((RouterFragment) currentFragment).onNavigationIconClick())) {
+        if (!(currentFragment instanceof FlowrFragment &&
+                ((FlowrFragment) currentFragment).onNavigationIconClick())) {
             close();
         }
     }
@@ -366,9 +366,9 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
         int screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
         int navigationBarColor = -1;
 
-        if (currentFragment instanceof RouterFragment) {
-            screenOrientation = ((RouterFragment) currentFragment).getScreenOrientation();
-            navigationBarColor = ((RouterFragment) currentFragment).getNavigationBarColor();
+        if (currentFragment instanceof FlowrFragment) {
+            screenOrientation = ((FlowrFragment) currentFragment).getScreenOrientation();
+            navigationBarColor = ((FlowrFragment) currentFragment).getNavigationBarColor();
         }
 
         screen.setScreenOrientation(screenOrientation);
@@ -386,19 +386,19 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
         NavigationIconType iconType = NavigationIconType.HIDDEN;
         String title = null;
 
-        if (currentFragment instanceof RouterFragment) {
-            iconType = ((RouterFragment) currentFragment).getNavigationIconType();
-            title = ((RouterFragment) currentFragment).getTitle();
+        if (currentFragment instanceof FlowrFragment) {
+            iconType = ((FlowrFragment) currentFragment).getNavigationIconType();
+            title = ((FlowrFragment) currentFragment).getTitle();
         }
 
         if (iconType == NavigationIconType.CUSTOM) {
-            toolbarHandler.setCustomNavigationIcon(((RouterFragment) currentFragment).getNavigationIcon());
+            toolbarHandler.setCustomNavigationIcon(((FlowrFragment) currentFragment).getNavigationIcon());
         } else {
             toolbarHandler.setNavigationIcon(iconType);
         }
 
-        toolbarHandler.setToolbarVisible(!(currentFragment instanceof RouterFragment) ||
-                        ((RouterFragment) currentFragment).isToolbarVisible());
+        toolbarHandler.setToolbarVisible(!(currentFragment instanceof FlowrFragment) ||
+                        ((FlowrFragment) currentFragment).isToolbarVisible());
 
         toolbarHandler.setToolbarTitle(title != null ? title : "");
     }
@@ -408,8 +408,8 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
             return;
         }
 
-        drawerHandler.setDrawerEnabled(!(currentFragment instanceof RouterFragment) ||
-                ((RouterFragment) currentFragment).isDrawerEnabled());
+        drawerHandler.setDrawerEnabled(!(currentFragment instanceof FlowrFragment) ||
+                ((FlowrFragment) currentFragment).isDrawerEnabled());
     }
 
     /**
@@ -418,7 +418,7 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
      * @param fragmentClass the class for the fragment to be displayed
      * @return a new {@link Builder} instance
      */
-    public <T extends Fragment & RouterFragment> Builder open(Class<? extends T> fragmentClass) {
+    public <T extends Fragment & FlowrFragment> Builder open(Class<? extends T> fragmentClass) {
         return new Builder<>(fragmentClass);
     }
 
@@ -480,7 +480,7 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
     /**
      * This builder class is used to show a new fragment inside the current activity
      */
-    public class Builder<T extends Fragment & RouterFragment> {
+    public class Builder<T extends Fragment & FlowrFragment> {
 
         private TransactionData<T> data;
 
@@ -547,7 +547,7 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
          * Displays the fragment using this builder configurations.
          */
         public void displayFragment() {
-            Router.this.displayFragment(data);
+            Flowr.this.displayFragment(data);
         }
 
         /**
@@ -568,7 +568,7 @@ public class Router implements FragmentManager.OnBackStackChangedListener,
                         getResultRequestBundle(fragmentId, requestCode));
             }
 
-            Router.this.displayFragment(data);
+            Flowr.this.displayFragment(data);
         }
 
         private Bundle getResultRequestBundle(String fragmentId, int requestCode) {

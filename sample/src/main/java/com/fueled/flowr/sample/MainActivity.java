@@ -1,21 +1,21 @@
-package com.fueled.router.sample;
+package com.fueled.flowr.sample;
 
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 
-import com.fueled.router.NavigationIconType;
-import com.fueled.router.Router;
-import com.fueled.router.ToolbarHandler;
-import com.fueled.router.sample.core.AbstractActivity;
-import com.fueled.router.sample.core.FragmentResultPublisherImpl;
-import com.fueled.router.sample.databinding.ActivityMainBinding;
+import com.fueled.flowr.NavigationIconType;
+import com.fueled.flowr.Flowr;
+import com.fueled.flowr.ToolbarHandler;
+import com.fueled.flowr.sample.core.AbstractActivity;
+import com.fueled.flowr.sample.core.FragmentResultPublisherImpl;
+import com.fueled.flowr.sample.databinding.ActivityMainBinding;
 
 
 public class MainActivity extends AbstractActivity implements ToolbarHandler {
 
-    private Router router;
+    private Flowr flowr;
     private ActivityMainBinding binding;
 
     @Override
@@ -25,21 +25,20 @@ public class MainActivity extends AbstractActivity implements ToolbarHandler {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         setSupportActionBar(binding.toolbar);
 
-        if (getRouter().getCurrentFragment() == null) {
-            getRouter().open(HomeFragment.class)
+        if (getFlowr().getCurrentFragment() == null) {
+            getFlowr().open(HomeFragment.class)
                     .skipBackStack(true)
                     .displayFragment();
         }
     }
 
-    @Override
-    public Router getRouter() {
-        if (router == null) {
-            router = new Router(R.id.main_container, this, this, null,
+    public Flowr getFlowr() {
+        if (flowr == null) {
+            flowr = new Flowr(R.id.main_container, this, this, null,
                     FragmentResultPublisherImpl.getInstance());
         }
 
-        return router;
+        return flowr;
     }
 
     @Override

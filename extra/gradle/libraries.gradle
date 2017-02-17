@@ -5,7 +5,7 @@ ext {
     buildTools = "25.0.2"
     minSdk = 16
     targetSdk = 25
-    appId = "com.fueled.router.sample"
+    appId = "com.fueled.flowr.sample"
 
     //android libraries
     supportVersion = '25.1.1'

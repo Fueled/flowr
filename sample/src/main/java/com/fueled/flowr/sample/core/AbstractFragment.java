@@ -1,4 +1,4 @@
-package com.fueled.router.sample.core;
+package com.fueled.flowr.sample.core;
 
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
@@ -6,10 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.fueled.router.AbstractRouterFragment;
-import com.fueled.router.ResultResponse;
-import com.fueled.router.Router;
-import com.fueled.router.sample.R;
+import com.fueled.flowr.AbstractFlowrFragment;
+import com.fueled.flowr.ResultResponse;
+import com.fueled.flowr.Flowr;
+import com.fueled.flowr.sample.R;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -18,7 +18,7 @@ import io.reactivex.functions.Consumer;
  * Created by hussein@fueled.com on 13/02/2017.
  * Copyright (c) 2017 Fueled. All rights reserved.
  */
-public abstract class AbstractFragment extends AbstractRouterFragment {
+public abstract class AbstractFragment extends AbstractFlowrFragment {
 
     private Disposable fragmentResultSubscription;
 
@@ -42,9 +42,9 @@ public abstract class AbstractFragment extends AbstractRouterFragment {
         listenToResults();
     }
 
-    protected Router getRouter() {
+    protected Flowr getRouter() {
         if (getActivity() != null && getActivity() instanceof AbstractActivity) {
-            return ((AbstractActivity) getActivity()).getRouter();
+            return ((AbstractActivity) getActivity()).getFlowr();
         }
 
         return null;

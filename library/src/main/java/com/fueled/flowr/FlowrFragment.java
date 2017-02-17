@@ -1,4 +1,4 @@
-package com.fueled.router;
+package com.fueled.flowr;
 
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
@@ -7,7 +7,7 @@ import android.support.annotation.ColorInt;
  * Created by hussein@fueled.com on 09/02/2017.
  * Copyright (c) 2017 Fueled. All rights reserved.
  */
-public interface RouterFragment {
+public interface FlowrFragment {
 
     /**
      * Called when the fragment has been popped back from the stack

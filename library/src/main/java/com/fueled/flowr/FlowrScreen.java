@@ -1,4 +1,4 @@
-package com.fueled.router;
+package com.fueled.flowr;
 
 import android.support.annotation.ColorInt;
 import android.support.v4.app.FragmentManager;
@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentManager;
  * Copyright (c) 2016 Fueled. All rights reserved.
  */
 
-public interface RouterScreen {
+public interface FlowrScreen {
 
     FragmentManager getScreenFragmentManager();
 
