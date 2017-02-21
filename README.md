@@ -1,4 +1,4 @@
-# FlowR
+# FlowR [![](https://jitpack.io/v/Fueled/flowr.svg)](https://jitpack.io/#Fueled/flowr)
 
 FlowR is a wrapper class around the Fragment Manager. It's mainly used to navigate between different fragments easily while providing a wide range of functionality. The following are the functionalities provided by the Flowr:
 
