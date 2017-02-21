@@ -1,6 +1,6 @@
 # FlowR
 
-FlowR is a wrapper class around the Fragment Manager. It's mainly used to navigate between different fragments easily while providing a wide range of functionality. The following are the functionalities provided by the router:
+FlowR is a wrapper class around the Fragment Manager. It's mainly used to navigate between different fragments easily while providing a wide range of functionality. The following are the functionalities provided by the Flowr:
 
 * Easily navigate between different fragments.
 * Ability to open fragments for result.
@@ -25,12 +25,12 @@ Then add the dependency to the application module:
 
 ## Getting Started
 
-Each new activity will have its own Router instance, the router lifecycle should be bound to the activity, meaning it should be destroyed and created with the activity. For the activity to work with the router we need to make sure that it implements the interface `RouterScreen`.
+Each new activity will have its own Flowr instance, the Flowr lifecycle should be bound to the activity, meaning it should be destroyed and created with the activity. For the activity to work with the Flowr we need to make sure that it implements the interface `FlowrScreen`.
 
-While creating a new router instance these are the required parameters:
+While creating a new Flowr instance these are the required parameters:
 
-* **`containerId`**: this is the id for the layout that the router will use to display the fragments inside.
-* **`RouterScreen`**: in most cases this will be your activity with the interface `RouterScreen` implemented, this will provide the router with access to the activity `FragmentManager` and the ability to set values such as the screen orientation and navigation bar color depending on the fragment currently being displayed.
+* **`containerId`**: this is the id for the layout that the Flowr will use to display the fragments inside.
+* **`FlowrScreen`**: in most cases this will be your activity with the interface `FlowrScreen` implemented, this will provide the Flowr with access to the activity `FragmentManager` and the ability to set values such as the screen orientation and navigation bar color depending on the fragment currently being displayed.
 * **`FragmentsResultPublisher`**: this is used to publish results from fragments that where opened for results.
 
 And some of the optional values are:
@@ -40,14 +40,14 @@ And some of the optional values are:
 * **`DrawerHandler`**: this is only needed if the activity contains a side drawer, again in most cases this will be your activity with the `DrawerHandler` interface implemented. The `DrawerHandler` provides the ability to enable/disable the drawer and open/close the drawer.
 
 
-Creating a new router instance for an activity that does not have a toolbar and a drawer:
+Creating a new Flowr instance for an activity that does not have a toolbar and a drawer:
 ```java
-Router router = new Router(R.id.main_container, flowrScreen, resultPublisher);
+Flowr Flowr = new Flowr(R.id.main_container, flowrScreen, resultPublisher);
 ```
 
-Creating a new router instance for an activity that does have a toolbar and a drawer:
+Creating a new Flowr instance for an activity that does have a toolbar and a drawer:
 ```java
-Router router = new Router(R.id.main_container, flowrScreen, toolbarHandler,
+Flowr Flowr = new Flowr(R.id.main_container, flowrScreen, toolbarHandler,
   drawerHandler resultPublisher);
 ```
 
@@ -66,7 +66,7 @@ When displaying a new fragment there are multiple parameters that can be specifi
 finally after we have specified all the parameters we need we can simpaly call `displayFragment()` to display the fragment.
 
 ```java
-router.open(DemoFragment.class)
+Flowr.open(DemoFragment.class)
       .setData(data)
       .skipBackStack(false)
       .clearBackStack(true)
@@ -83,7 +83,7 @@ When displaying a fragment for results, we will have access to all the parameter
 * **`requestCode`**: this code will be returned in `onFragmentResults()` when the fragment is closed, and it can be used to identify the request from which the results were returned.
 
 ```java
-router.open(RequestFragment.class)
+Flowr.open(RequestFragment.class)
       .displayFragmentForResults(getFragmentId(), REQUEST_CODE);
 ```
 
@@ -104,17 +104,17 @@ protected void onFragmentResults(int requestCode, int resultCode, Bundle data) {
 }
 ```
 
-Finally when closing a fragment that was opened for results you will need to call the router method `closeWithResults()`:
+Finally when closing a fragment that was opened for results you will need to call the Flowr method `closeWithResults()`:
 
 ```java
-router.closeWithResults(getResultsResponse(resultCode, resultData));
+Flowr.closeWithResults(getResultsResponse(resultCode, resultData));
 ```
 
 ## State Sync and Fragment Dependent Customization
 
-The router provides the ability to set custom attributes for values such as the screen orientation and navigation bar color for each fragment. These values are kept in sync automatically with the parent activity when navigating between different fragments through the router `syncScreenState()` method. The `syncScreenState()` method is only required to be invoked manually when a change to one of these values has been made after the fragment has been already displayed.
+The Flowr provides the ability to set custom attributes for values such as the screen orientation and navigation bar color for each fragment. These values are kept in sync automatically with the parent activity when navigating between different fragments through the Flowr `syncScreenState()` method. The `syncScreenState()` method is only required to be invoked manually when a change to one of these values has been made after the fragment has been already displayed.
 
-The following custom values are what is currently supported by the router:
+The following custom values are what is currently supported by the Flowr:
 
 ### Screen Orientation
 
@@ -150,7 +150,7 @@ public class DemoFragment extends AbstractFragment<DemoPresenter> implements Dem
 
 ### Toolbar Options
 
-These values are only used if the parent activity has a toolbar and the router was provided a `ToolbarHandler` instance.
+These values are only used if the parent activity has a toolbar and the Flowr was provided a `ToolbarHandler` instance.
 
 1. **Toolbar Visibility:** The boolean value specified here by overriding the `isToolbarVisible()` method in your fragment, will be used to determine if the fragment should be visible or not. By default the toolbar is visible.
 ```java
@@ -193,7 +193,7 @@ public class DemoFragment extends AbstractFragment<DemoPresenter> implements Dem
 
 ### Drawer Options
 
-The router also provides the ability to specify whether the drawer should be enabled or not for the current fragment, this option is also only available if the fragment has a drawer and the router was provided with a `DrawerHandler` instance. To specify this you will have to override the `isDrawerEnabled()` method in your fragment and return either `true` or `false`.
+The Flowr also provides the ability to specify whether the drawer should be enabled or not for the current fragment, this option is also only available if the fragment has a drawer and the Flowr was provided with a `DrawerHandler` instance. To specify this you will have to override the `isDrawerEnabled()` method in your fragment and return either `true` or `false`.
 
 ```java
 public class DemoFragment extends AbstractFragment<DemoPresenter> implements DemoScene {
