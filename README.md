@@ -47,8 +47,7 @@ Flowr Flowr = new Flowr(R.id.main_container, flowrScreen, resultPublisher);
 
 Creating a new Flowr instance for an activity that does have a toolbar and a drawer:
 ```java
-Flowr Flowr = new Flowr(R.id.main_container, flowrScreen, toolbarHandler,
-  drawerHandler resultPublisher);
+Flowr Flowr = new Flowr(R.id.main_container, flowrScreen, toolbarHandler, drawerHandler, resultPublisher);
 ```
 
 
