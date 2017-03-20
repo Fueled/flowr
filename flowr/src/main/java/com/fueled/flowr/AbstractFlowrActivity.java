@@ -3,7 +3,9 @@ package com.fueled.flowr;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.ColorInt;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
@@ -15,6 +17,15 @@ public abstract class AbstractFlowrActivity<T extends Flowr> extends AppCompatAc
         implements FlowrScreen {
 
     public abstract T getFlowr();
+
+    @Override
+    public void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        if (getFlowr() != null) {
+            getFlowr().syncScreenState();
+        }
+    }
 
     @Override
     protected void onDestroy() {
