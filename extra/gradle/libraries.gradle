@@ -7,6 +7,10 @@ ext {
     targetSdk = 25
     appId = "com.fueled.flowr.sample"
 
+    //library
+    libraryGroup = 'com.github.fueled'
+    libraryVersion = '1.0.1'
+
     //android libraries
     supportVersion = '25.1.1'
 
