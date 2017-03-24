@@ -132,7 +132,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
             if (flowrScreen.getScreenFragmentManager() != null) {
                 screen.getScreenFragmentManager().addOnBackStackChangedListener(this);
-                currentFragment = retrieveCurrentFragment();
+                setCurrentFragment(retrieveCurrentFragment());
             }
         }
     }
@@ -218,9 +218,10 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
             transaction.commit();
 
-            currentFragment = fragment;
+            if (data.isSkipBackStack()) {
+                setCurrentFragment(fragment);
+            }
 
-            syncScreenState();
         } catch (Exception e) {
             Log.e(TAG, "Error while displaying fragment.", e);
         }
@@ -248,13 +249,26 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
     @Override
     public void onBackStackChanged() {
-        currentFragment = retrieveCurrentFragment();
+        setCurrentFragment(retrieveCurrentFragment());
+    }
 
-        if (currentFragment instanceof FlowrFragment) {
-            ((FlowrFragment) currentFragment).onPoppedBackFromStack();
+    private void setCurrentFragment(Fragment newFragment) {
+        if (currentFragment != newFragment) {
+            updateVisibilityState(currentFragment, false);
+            currentFragment = newFragment;
+            updateVisibilityState(currentFragment, true);
+            syncScreenState();
         }
+    }
 
-        syncScreenState();
+    private void updateVisibilityState(Fragment fragment, boolean shown) {
+        if (fragment instanceof FlowrFragment) {
+            if (shown) {
+                ((FlowrFragment) fragment).onShown();
+            } else {
+                ((FlowrFragment) fragment).onHidden();
+            }
+        }
     }
 
     /**
@@ -398,7 +412,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         }
 
         toolbarHandler.setToolbarVisible(!(currentFragment instanceof FlowrFragment) ||
-                        ((FlowrFragment) currentFragment).isToolbarVisible());
+                ((FlowrFragment) currentFragment).isToolbarVisible());
 
         toolbarHandler.setToolbarTitle(title != null ? title : "");
     }

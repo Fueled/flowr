@@ -10,11 +10,6 @@ import android.support.annotation.ColorInt;
 public interface FlowrFragment {
 
     /**
-     * Called when the fragment has been popped back from the stack
-     */
-    void onPoppedBackFromStack();
-
-    /**
      * Called when the back button has been pressed. Override this method
      * if the fragment needs to handle back button presses
      *
@@ -83,8 +78,19 @@ public interface FlowrFragment {
     @ColorInt int getNavigationBarColor();
 
     /**
+     * Returns the title to be used for this fragment, return null to use the activity default title.
      *
-     * @return
+     * @return the title to be used for this fragment
      */
     String getTitle();
+
+    /**
+     * Called when the fragment is added or returned to the top of the back stack.
+     */
+    void onShown();
+
+    /**
+     * Called when the fragment has been removed from the top of the back stack.
+     */
+    void onHidden();
 }

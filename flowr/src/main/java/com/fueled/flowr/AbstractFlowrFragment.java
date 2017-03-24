@@ -16,6 +16,7 @@ public abstract class AbstractFlowrFragment extends Fragment implements FlowrFra
     private static final String KEY_FRAGMENT_ID = "key_fragment_id";
 
     private String fragmentId;
+    private boolean shown;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -35,19 +36,13 @@ public abstract class AbstractFlowrFragment extends Fragment implements FlowrFra
 
     /**
      * Returns the unique id for this fragment instance.
+     *
      * @return a unique id for this fragment instance.
      */
     public String getFragmentId() {
         return fragmentId;
     }
 
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onPoppedBackFromStack() {
-        // Do Nothing. No Default implementation is required.
-    }
 
     /**
      * @inheritDoc
@@ -119,5 +114,30 @@ public abstract class AbstractFlowrFragment extends Fragment implements FlowrFra
     @Override
     public String getTitle() {
         return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void onShown() {
+        this.shown = true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void onHidden() {
+        this.shown = false;
+    }
+
+    /**
+     * Returns whether this fragment is currently at the top of the back stack.
+     *
+     * @return true if this fragment is at the top of the back stack.
+     */
+    protected boolean isShown() {
+        return shown;
     }
 }
