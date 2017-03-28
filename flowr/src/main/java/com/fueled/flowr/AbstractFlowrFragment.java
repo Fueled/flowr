@@ -32,6 +32,15 @@ public abstract class AbstractFlowrFragment extends Fragment implements FlowrFra
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (fragmentId != null) {
+            outState.putString(KEY_FRAGMENT_ID, fragmentId);
+        }
+    }
+
     protected void onFragmentResults(int requestCode, int resultCode, Bundle data) {
         // Do Nothing. No Default implementation is required.
     }
