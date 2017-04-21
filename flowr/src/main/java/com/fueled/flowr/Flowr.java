@@ -263,9 +263,9 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
                                      @AnimRes int exitAnim, @AnimRes int popEnterAnim, @AnimRes int popExitAnim) {
         transaction.setCustomAnimations(
                 enterAnim,
-                exitAnim,
+                popExitAnim,
                 popEnterAnim,
-                popExitAnim);
+                exitAnim);
     }
 
     private Fragment retrieveCurrentFragment() {
