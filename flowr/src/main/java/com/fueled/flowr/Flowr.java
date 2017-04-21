@@ -486,6 +486,24 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         return FragmentTransaction.TRANSIT_NONE;
     }
 
+    /**
+     * The default pop enter animation to be used for fragment transactions
+     *
+     * @return the default fragment pop enter animation
+     */
+    protected int getDefaultPopEnterAnimation() {
+        return FragmentTransaction.TRANSIT_NONE;
+    }
+
+    /**
+     * The default pop exit animation to be used for fragment transactions
+     *
+     * @return the default fragment pop exit animation
+     */
+    protected int getDefaultPopExitAnimation() {
+        return FragmentTransaction.TRANSIT_NONE;
+    }
+
     @Override
     public void onClick(View view) {
         onNavigationIconClicked();
