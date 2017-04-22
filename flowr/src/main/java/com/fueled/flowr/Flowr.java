@@ -13,6 +13,9 @@ import android.view.View;
 
 import com.fueled.flowr.internal.TransactionData;
 
+import static android.R.attr.data;
+import static android.R.attr.fragment;
+
 
 /**
  * Created by hussein@fueled.com on 31/05/2016.
@@ -196,6 +199,8 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
             if (data.isReplaceCurrentFragment() && data.isSkipBackStack() && currentFragment != null) {
                 transaction.remove(currentFragment).commit();
+            } else if (data.isHidePrevious() && currentFragment != null) {
+                transaction.hide(currentFragment).commit();
             }
 
             Fragment fragment = data.getFragmentClass().newInstance();
@@ -256,6 +261,11 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         if (currentFragment != newFragment) {
             updateVisibilityState(currentFragment, false);
             currentFragment = newFragment;
+            if (currentFragment.isHidden()) {
+                FragmentTransaction transaction = screen.getScreenFragmentManager().beginTransaction();
+                transaction.show(currentFragment);
+                transaction.commit();
+            }
             updateVisibilityState(currentFragment, true);
             syncScreenState();
         }
@@ -555,6 +565,14 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         public Builder noTransactionAnimation() {
             return setCustomTransactionAnimation(FragmentTransaction.TRANSIT_NONE,
                     FragmentTransaction.TRANSIT_NONE);
+        }
+
+        /**
+         * Use it to hide the current fragment when new fragment is displayed
+         */
+        public Builder hidePrevious() {
+            data.setHidePrevious(true);
+            return this;
         }
 
         /**
