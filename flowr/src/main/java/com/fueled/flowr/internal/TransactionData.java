@@ -18,6 +18,7 @@ public final class TransactionData<T  extends Fragment & FlowrFragment> {
     private boolean replaceCurrentFragment = false;
     private int enterAnim;
     private int exitAnim;
+    private boolean hidePrevious = false;
 
     public TransactionData(Class<? extends T> fragmentClass) {
         this.fragmentClass = fragmentClass;
@@ -51,6 +52,14 @@ public final class TransactionData<T  extends Fragment & FlowrFragment> {
 
     public void setSkipBackStack(boolean skipBackStack) {
         this.skipBackStack = skipBackStack;
+    }
+
+    public boolean isHidePrevious() {
+        return hidePrevious;
+    }
+
+    public void setHidePrevious(boolean hidePrevious) {
+        this.hidePrevious = hidePrevious;
     }
 
     public boolean isClearBackStack() {
