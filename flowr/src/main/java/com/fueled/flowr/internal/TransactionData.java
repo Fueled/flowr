@@ -2,6 +2,7 @@ package com.fueled.flowr.internal;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 
 import com.fueled.flowr.FlowrFragment;
 
@@ -9,7 +10,7 @@ import com.fueled.flowr.FlowrFragment;
  * Created by hussein@fueled.com on 16/02/2017.
  * Copyright (c) 2017 Fueled. All rights reserved.
  */
-public final class TransactionData<T  extends Fragment & FlowrFragment> {
+public final class TransactionData<T extends Fragment & FlowrFragment> {
 
     private Class<? extends T> fragmentClass;
     private Bundle args;
@@ -18,15 +19,43 @@ public final class TransactionData<T  extends Fragment & FlowrFragment> {
     private boolean replaceCurrentFragment = false;
     private int enterAnim;
     private int exitAnim;
+    private int popEnterAnim;
+    private int popExitAnim;
 
     public TransactionData(Class<? extends T> fragmentClass) {
-        this.fragmentClass = fragmentClass;
+        init(fragmentClass, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE);
     }
 
     public TransactionData(Class<? extends T> fragmentClass, int enterAnim, int exitAnim) {
+        init(fragmentClass, enterAnim, exitAnim, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE);
+    }
+
+    public TransactionData(Class<? extends T> fragmentClass, int enterAnim, int exitAnim, int popEnterAnim, int popExitAnim) {
+        init(fragmentClass, enterAnim, exitAnim, popEnterAnim, popExitAnim);
+    }
+
+    protected void init(Class<? extends T> fragmentClass, int enterAnim, int exitAnim, int popEnterAnim, int popExitAnim) {
         this.fragmentClass = fragmentClass;
         this.enterAnim = enterAnim;
         this.exitAnim = exitAnim;
+        this.popEnterAnim = popEnterAnim;
+        this.popExitAnim = popExitAnim;
+    }
+
+    public int getPopEnterAnim() {
+        return popEnterAnim;
+    }
+
+    public void setPopEnterAnim(int popEnterAnim) {
+        this.popEnterAnim = popEnterAnim;
+    }
+
+    public int getPopExitAnim() {
+        return popExitAnim;
+    }
+
+    public void setPopExitAnim(int popExitAnim) {
+        this.popExitAnim = popExitAnim;
     }
 
     public Class<? extends T> getFragmentClass() {

@@ -26,14 +26,11 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     private final static String KEY_REQUEST_CODE = "KEY_REQUEST_CODE";
 
     private final static String TAG = Flowr.class.getSimpleName();
-
+    private final FragmentsResultPublisher resultPublisher;
+    private final int mainContainerId;
     private FlowrScreen screen;
     private ToolbarHandler toolbarHandler;
     private DrawerHandler drawerHandler;
-
-    private final FragmentsResultPublisher resultPublisher;
-    private final int mainContainerId;
-
     private Fragment currentFragment;
 
     private boolean overrideBack;
@@ -109,6 +106,32 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         setDrawerHandler(drawerHandler);
 
         syncScreenState();
+    }
+
+    /**
+     * Build and return a new ResultResponse instant using the arguments passed in.
+     *
+     * @param arguments  Used to retrieve the ID and request code for the fragment
+     *                   requesting the results.
+     * @param resultCode The results code to be returned.
+     * @param data       Used to return extra data that might be required.
+     * @return a new {@link ResultResponse} instance
+     */
+    public static ResultResponse getResultsResponse(Bundle arguments, int resultCode, Bundle data) {
+        if (arguments == null || !arguments.containsKey(KEY_REQUEST_BUNDLE)) {
+            return null;
+        }
+
+        ResultResponse resultResponse = new ResultResponse();
+        resultResponse.resultCode = resultCode;
+        resultResponse.data = data;
+
+        Bundle requestBundle = arguments.getBundle(KEY_REQUEST_BUNDLE);
+
+        resultResponse.fragmentId = requestBundle.getString(KEY_FRAGMENT_ID);
+        resultResponse.requestCode = requestBundle.getInt(KEY_REQUEST_CODE);
+
+        return resultResponse;
     }
 
     /**
@@ -208,7 +231,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
                 transaction.addToBackStack(id);
             }
 
-            setCustomAnimations(transaction, data.getEnterAnim(), data.getExitAnim());
+            setCustomAnimations(transaction, data.getEnterAnim(), data.getExitAnim(), data.getPopEnterAnim(), data.getPopExitAnim());
 
             if (data.isReplaceCurrentFragment() && !data.isSkipBackStack()) {
                 transaction.replace(mainContainerId, fragment);
@@ -227,13 +250,23 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         }
     }
 
+    /**
+     * Set a Custom Animation to a Fragment transaction
+     *
+     * @param transaction  The transaction that will
+     * @param enterAnim    The animation resource to be used when the next fragment enters.
+     * @param exitAnim     The animation resource to be used when the current fragment exits.
+     * @param popEnterAnim The animation resource to be used when the previous fragment enters on back pressed.
+     * @param popExitAnim  The animation resource to be used when the current fragment exits on back pressed..
+     */
     private void setCustomAnimations(FragmentTransaction transaction, @AnimRes int enterAnim,
-                                     @AnimRes int exitAnim) {
+                                     @AnimRes int exitAnim, @AnimRes int popEnterAnim, @AnimRes int popExitAnim) {
         transaction.setCustomAnimations(
                 enterAnim,
-                FragmentTransaction.TRANSIT_NONE,
-                FragmentTransaction.TRANSIT_NONE,
-                exitAnim);
+                exitAnim,
+                popEnterAnim,
+                popExitAnim
+        );
     }
 
     private Fragment retrieveCurrentFragment() {
@@ -250,15 +283,6 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     @Override
     public void onBackStackChanged() {
         setCurrentFragment(retrieveCurrentFragment());
-    }
-
-    private void setCurrentFragment(Fragment newFragment) {
-        if (currentFragment != newFragment) {
-            updateVisibilityState(currentFragment, false);
-            currentFragment = newFragment;
-            updateVisibilityState(currentFragment, true);
-            syncScreenState();
-        }
     }
 
     private void updateVisibilityState(Fragment fragment, boolean shown) {
@@ -372,6 +396,15 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         return currentFragment;
     }
 
+    private void setCurrentFragment(Fragment newFragment) {
+        if (currentFragment != newFragment) {
+            updateVisibilityState(currentFragment, false);
+            currentFragment = newFragment;
+            updateVisibilityState(currentFragment, true);
+            syncScreenState();
+        }
+    }
+
     /**
      * Called by the {@link android.app.Activity#onPostCreate(Bundle)} to update
      * the state of the container screen.
@@ -437,32 +470,6 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     }
 
     /**
-     * Build and return a new ResultResponse instant using the arguments passed in.
-     *
-     * @param arguments  Used to retrieve the ID and request code for the fragment
-     *                   requesting the results.
-     * @param resultCode The results code to be returned.
-     * @param data       Used to return extra data that might be required.
-     * @return a new {@link ResultResponse} instance
-     */
-    public static ResultResponse getResultsResponse(Bundle arguments, int resultCode, Bundle data) {
-        if (arguments == null || !arguments.containsKey(KEY_REQUEST_BUNDLE)) {
-            return null;
-        }
-
-        ResultResponse resultResponse = new ResultResponse();
-        resultResponse.resultCode = resultCode;
-        resultResponse.data = data;
-
-        Bundle requestBundle = arguments.getBundle(KEY_REQUEST_BUNDLE);
-
-        resultResponse.fragmentId = requestBundle.getString(KEY_FRAGMENT_ID);
-        resultResponse.requestCode = requestBundle.getInt(KEY_REQUEST_CODE);
-
-        return resultResponse;
-    }
-
-    /**
      * The default enter animation to be used for fragment transactions
      *
      * @return the default fragment enter animation
@@ -477,6 +484,24 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      * @return the default fragment exit animation
      */
     protected int getDefaultExitAnimation() {
+        return FragmentTransaction.TRANSIT_NONE;
+    }
+
+    /**
+     * The default pop enter animation to be used for fragment transactions
+     *
+     * @return the default fragment pop enter animation
+     */
+    protected int getDefaultPopEnterAnimation() {
+        return FragmentTransaction.TRANSIT_NONE;
+    }
+
+    /**
+     * The default pop exit animation to be used for fragment transactions
+     *
+     * @return the default fragment pop exit animation
+     */
+    protected int getDefaultPopExitAnimation() {
         return FragmentTransaction.TRANSIT_NONE;
     }
 
@@ -544,9 +569,26 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
          * @param exitAnim  the fragment exit animation.
          */
         public Builder setCustomTransactionAnimation(@AnimRes int enterAnim, @AnimRes int exitAnim) {
+            return setCustomTransactionAnimation(enterAnim, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE, exitAnim);
+        }
+
+
+        /**
+         * Set a Custom Animation to a Fragment transaction.
+         *
+         * @param enterAnim    The animation resource to be used when the next fragment enters.
+         * @param exitAnim     The animation resource to be used when the current fragment exits.
+         * @param popEnterAnim The animation resource to be used when the previous fragment enters on back pressed.
+         * @param popExitAnim  The animation resource to be used when the current fragment exits on back pressed..
+         */
+        public Builder setCustomTransactionAnimation(@AnimRes int enterAnim,
+                                                     @AnimRes int exitAnim, @AnimRes int popEnterAnim, @AnimRes int popExitAnim) {
             data.setEnterAnim(enterAnim);
             data.setExitAnim(exitAnim);
+            data.setPopEnterAnim(popEnterAnim);
+            data.setPopExitAnim(popExitAnim);
             return this;
+
         }
 
         /**

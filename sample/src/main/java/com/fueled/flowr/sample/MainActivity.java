@@ -5,8 +5,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 
-import com.fueled.flowr.NavigationIconType;
 import com.fueled.flowr.Flowr;
+import com.fueled.flowr.NavigationIconType;
 import com.fueled.flowr.ToolbarHandler;
 import com.fueled.flowr.sample.core.AbstractActivity;
 import com.fueled.flowr.sample.core.FragmentResultPublisherImpl;
