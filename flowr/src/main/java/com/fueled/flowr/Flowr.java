@@ -263,9 +263,10 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
                                      @AnimRes int exitAnim, @AnimRes int popEnterAnim, @AnimRes int popExitAnim) {
         transaction.setCustomAnimations(
                 enterAnim,
-                popExitAnim,
+                exitAnim,
                 popEnterAnim,
-                exitAnim);
+                popExitAnim
+        );
     }
 
     private Fragment retrieveCurrentFragment() {
@@ -568,12 +569,12 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
          * @param exitAnim  the fragment exit animation.
          */
         public Builder setCustomTransactionAnimation(@AnimRes int enterAnim, @AnimRes int exitAnim) {
-            return setCustomTransactionAnimation(enterAnim, exitAnim, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE);
+            return setCustomTransactionAnimation(enterAnim, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE, exitAnim);
         }
 
 
         /**
-         * Set a Custom Animation to a Fragment transaction
+         * Set a Custom Animation to a Fragment transaction.
          *
          * @param enterAnim    The animation resource to be used when the next fragment enters.
          * @param exitAnim     The animation resource to be used when the current fragment exits.
