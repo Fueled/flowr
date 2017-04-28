@@ -5,7 +5,6 @@ import android.view.View;
 
 import com.fueled.flowr.sample.core.AbstractFragment;
 import com.fueled.flowr.sample.databinding.FragmentViewBinding;
-import com.fueled.flowr.sample.R;
 
 /**
  * Created by hussein@fueled.com on 14/02/2017.

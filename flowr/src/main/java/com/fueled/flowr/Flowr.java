@@ -525,7 +525,8 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
         public Builder(Class<? extends T> fragmentClass) {
             data = new TransactionData<>(fragmentClass, getDefaultEnterAnimation(),
-                    getDefaultExitAnimation());
+                    getDefaultExitAnimation(), getDefaultPopEnterAnimation(),
+                    getDefaultPopExitAnimation());
         }
 
         /**
