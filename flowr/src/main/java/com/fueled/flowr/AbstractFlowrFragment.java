@@ -26,7 +26,7 @@ public abstract class AbstractFlowrFragment extends Fragment implements FlowrFra
         if (savedInstanceState != null) {
             fragmentId = savedInstanceState.getString(KEY_FRAGMENT_ID, null);
         }
-        
+
         if (fragmentId == null) {
             fragmentId = UUID.randomUUID().toString();
         }

@@ -23,18 +23,16 @@ public final class TransactionData<T extends Fragment & FlowrFragment> {
     private int popExitAnim;
 
     public TransactionData(Class<? extends T> fragmentClass) {
-        init(fragmentClass, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE);
+        this(fragmentClass, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE);
     }
 
     public TransactionData(Class<? extends T> fragmentClass, int enterAnim, int exitAnim) {
-        init(fragmentClass, enterAnim, exitAnim, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE);
+        this(fragmentClass, enterAnim, exitAnim, FragmentTransaction.TRANSIT_NONE,
+                FragmentTransaction.TRANSIT_NONE);
     }
 
-    public TransactionData(Class<? extends T> fragmentClass, int enterAnim, int exitAnim, int popEnterAnim, int popExitAnim) {
-        init(fragmentClass, enterAnim, exitAnim, popEnterAnim, popExitAnim);
-    }
-
-    protected void init(Class<? extends T> fragmentClass, int enterAnim, int exitAnim, int popEnterAnim, int popExitAnim) {
+    public TransactionData(Class<? extends T> fragmentClass, int enterAnim, int exitAnim,
+                           int popEnterAnim, int popExitAnim) {
         this.fragmentClass = fragmentClass;
         this.enterAnim = enterAnim;
         this.exitAnim = exitAnim;
