@@ -36,7 +36,7 @@ While creating a new Flowr instance these are the required parameters:
 And some of the optional values are:
 
 * **`ToolbarHandler`**: this is only needed if a single `Toolbar` is going to be used for every fragment, in most cases this will be your activity with the interface `ToolbarHandler` implemented. The `ToolbarHandler` provide extra functionality to the fragments displayed to define the toolbar navigation icon, and to toggle the toolbar visibility.
-* **`tagPrefix`**: a custom prefix for the tags to be used for fragments that will be added to the backstack, the defualt tag used is `#id-`.
+* **`tagPrefix`**: a custom prefix for the tags to be used for fragments that will be added to the backstack, the default tag used is `#id-`.
 * **`DrawerHandler`**: this is only needed if the activity contains a side drawer, again in most cases this will be your activity with the `DrawerHandler` interface implemented. The `DrawerHandler` provides the ability to enable/disable the drawer and open/close the drawer.
 
 
@@ -62,7 +62,7 @@ When displaying a new fragment there are multiple parameters that can be specifi
 * **`replaceCurrentFragment`**: specify whether this fragment should replace the fragment currently displayed inside the container or just be added over it. The default value used for this is `false`.
 * **`enterAnim`** and **`exitAnim`**: animation resource ID for the enter and exit fragment animation. The default values used here are `R.anim.fragment_enter_anim` and `R.anim.fragment_exit_anim`.
 
-finally after we have specified all the parameters we need we can simpaly call `displayFragment()` to display the fragment.
+finally after we have specified all the parameters we need we can simply call `displayFragment()` to display the fragment.
 
 ```java
 Flowr.open(DemoFragment.class)
@@ -70,7 +70,7 @@ Flowr.open(DemoFragment.class)
       .skipBackStack(false)
       .clearBackStack(true)
       .replaceCurrentFragment(true)
-      .setCustomTransationAnimation(R.anim.fragment_enter_anim, R.anim.fragment_exit_anim)
+      .setCustomTransactionAnimation(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.slide_in_left, android.R.anim.slide_out_right)
       .displayFragment();
 ```
 
