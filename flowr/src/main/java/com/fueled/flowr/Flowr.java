@@ -21,10 +21,11 @@ import com.fueled.flowr.internal.TransactionData;
 public class Flowr implements FragmentManager.OnBackStackChangedListener,
         View.OnClickListener {
 
+    public final static String DEEP_LINK_URL = "DEEP_LINK_URL";//to be used as Bundle key for deep links.
+
     private final static String KEY_REQUEST_BUNDLE = "KEY_REQUEST_BUNDLE";
     private final static String KEY_FRAGMENT_ID = "KEY_FRAGMENT_ID";
     private final static String KEY_REQUEST_CODE = "KEY_REQUEST_CODE";
-
     private final static String TAG = Flowr.class.getSimpleName();
     private final FragmentsResultPublisher resultPublisher;
     private final int mainContainerId;

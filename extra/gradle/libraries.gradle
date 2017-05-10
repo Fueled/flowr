@@ -9,7 +9,7 @@ ext {
 
     //library
     libraryGroup = 'com.github.fueled'
-    libraryVersion = '1.1.1'
+    libraryVersion = '1.2.0'
 
     //android libraries
     supportVersion = '25.1.1'
@@ -29,14 +29,17 @@ ext {
     espressoVersion = '2.2.2'
     mockitoVersion = '1.10.19'
 
+    javaPoetVersion = '1.8.0'
+
 
     libraries = [
-            appCompat            : "com.android.support:appcompat-v7:${supportVersion}",
-            designSupport        : "com.android.support:design:${supportVersion}",
-            vectorSupport        : "com.android.support:support-vector-drawable:${supportVersion}",
+            appCompat    : "com.android.support:appcompat-v7:${supportVersion}",
+            designSupport: "com.android.support:design:${supportVersion}",
+            vectorSupport: "com.android.support:support-vector-drawable:${supportVersion}",
 
-            rxJava               : "io.reactivex.rxjava2:rxjava:${rxJavaVersion}",
-            rxAndroid            : "io.reactivex.rxjava2:rxandroid:${rxAndroidVersion}"
+            rxJava       : "io.reactivex.rxjava2:rxjava:${rxJavaVersion}",
+            rxAndroid    : "io.reactivex.rxjava2:rxandroid:${rxAndroidVersion}",
+            javaPoet     : "com.squareup:javapoet:${javaPoetVersion}"
     ]
 
     testLibraries = [
