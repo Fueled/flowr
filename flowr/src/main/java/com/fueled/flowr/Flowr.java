@@ -1,9 +1,11 @@
 package com.fueled.flowr;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.AnimRes;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -12,6 +14,9 @@ import android.util.Log;
 import android.view.View;
 
 import com.fueled.flowr.internal.TransactionData;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 
 /**
@@ -33,7 +38,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     private ToolbarHandler toolbarHandler;
     private DrawerHandler drawerHandler;
     private Fragment currentFragment;
-
+    private Intent deepLinkIntent;
     private boolean overrideBack;
     private String tagPrefix;
 
@@ -135,6 +140,24 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         return resultResponse;
     }
 
+    private Constructor<? extends FlowrDeepLinkHandler> findBindingConstructorForClass() throws ClassNotFoundException, NoSuchMethodException {
+        //TODO update to dynamic package extraction like BuildConfig
+        Class<?> bindingClass = getClass().getClassLoader().loadClass("com.fueled.flowr.sample.FlowrDeepLinkHandlerImpl");
+        //noinspection unchecked
+        return (Constructor<? extends FlowrDeepLinkHandler>) bindingClass.getConstructor();
+    }
+
+    /**
+     * Set an intent to be parse for Deep Link support.
+     *
+     * @param intent The activity that contains the FlowR instance.
+     * @return this instance for FlowR.
+     */
+    public Flowr setDeepLinkContext(@NonNull Intent intent) {
+        this.deepLinkIntent = intent;
+        return this;
+    }
+
     /**
      * Returns the {@link FlowrScreen} used for this router.
      *
@@ -210,6 +233,9 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
     protected <T extends Fragment & FlowrFragment> void displayFragment(TransactionData<T> data) {
         try {
+
+            injectDeepLinkInfo(data);
+
             if (data.isClearBackStack()) {
                 clearBackStack();
             }
@@ -248,6 +274,42 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
         } catch (Exception e) {
             Log.e(TAG, "Error while displaying fragment.", e);
+        }
+    }
+
+    /**
+     * Parse the intent set by {@link #setDeepLinkContext(Intent)} and if this intent contains Deep Link info, update the {@link #currentFragment} and the Transaction data.
+     *
+     * @param data The Transaction data to extend if Deep link info are found in the {@link #deepLinkIntent}.
+     * @param <T>  The generic type for a valid Fragment.
+     */
+    @SuppressWarnings("unchecked")
+    private <T extends Fragment & FlowrFragment> void injectDeepLinkInfo(TransactionData<T> data) {
+        if (deepLinkIntent != null && deepLinkIntent.getAction().equals(Intent.ACTION_VIEW)) {
+            try {
+                Constructor<? extends FlowrDeepLinkHandler> deepLinkCtor = findBindingConstructorForClass();
+                if (deepLinkCtor != null) {
+                    FlowrDeepLinkHandler deepLinkHandler = deepLinkCtor.newInstance();
+                    FlowrDeepLinkInfo info = deepLinkHandler.routeIntentToScreen(deepLinkIntent);
+                    data.setFragmentClass(info.fragment);
+                    Bundle dataArgs = data.getArgs();
+                    if (dataArgs != null) {
+                        data.getArgs().putAll(info.data);
+                    } else {
+                        data.setArgs(info.data);
+                    }
+                }
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
         }
     }
 

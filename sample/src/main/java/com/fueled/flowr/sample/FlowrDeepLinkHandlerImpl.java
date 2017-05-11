@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.fueled.flowr.Flowr;
+import com.fueled.flowr.FlowrDeepLinkHandler;
+import com.fueled.flowr.FlowrDeepLinkInfo;
 import com.fueled.flowr.FlowrFragment;
 
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ import java.util.regex.Pattern;
  * Created by julienFueled on 5/10/17.
  */
 
-public class FlowrDeepLinkHandler<T extends Fragment & FlowrFragment> {
+public class FlowrDeepLinkHandlerImpl<T extends Fragment & FlowrFragment> implements FlowrDeepLinkHandler {
     public static final String url1 = "http://www.fueled.com/test";
     public static final String url2 = "/test2";
     public static final String url3 = "http://fueled.com/test?message={message}";
@@ -35,7 +37,7 @@ public class FlowrDeepLinkHandler<T extends Fragment & FlowrFragment> {
     public Map<String, Class<? extends T>> linkFragmentMap;
 
     @SuppressWarnings("unchecked")
-    public FlowrDeepLinkHandler() {
+    public FlowrDeepLinkHandlerImpl() {
         addFragment(url1, (Class<? extends T>) HomeFragment.class);
         addFragment(url2, (Class<? extends T>) HomeFragment.class);
         addFragment(url3, (Class<? extends T>) HomeFragment.class);
@@ -121,22 +123,19 @@ public class FlowrDeepLinkHandler<T extends Fragment & FlowrFragment> {
      * Parse an Intent containing a Deep Link and route it to the right fragment if it is valid
      *
      * @param intent The intent to parse for deep linking.
-     * @param flowr  An instance of FlowR
+     * @return The deep link info.
      */
-    public void routeIntentToScreen(@NonNull Intent intent, @NonNull Flowr flowr) {
+    @SuppressWarnings("unchecked")
+    public FlowrDeepLinkInfo routeIntentToScreen(@NonNull Intent intent) {
         if (intent.getAction().equals(Intent.ACTION_VIEW)) {
             Uri uri = intent.getData();
             for (String uriPattern : linkFragmentMap.keySet()) {
                 Bundle data = bundleUriInfo(uri, uriPattern);
                 if (data != null) {
-                    Class<? extends T> fragment = linkFragmentMap.get(uriPattern);
-                    flowr.open(fragment)
-                            .setData(data)
-                            .skipBackStack(true)
-                            .displayFragment();
-                    break;
+                    return new FlowrDeepLinkInfo(data, linkFragmentMap.get(uriPattern));
                 }
             }
         }
+        return null;
     }
 }

@@ -1,6 +1,5 @@
 package com.fueled.flowr.sample;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -35,11 +34,9 @@ public class MainActivity extends AbstractActivity implements ToolbarHandler, Dr
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         setSupportActionBar(binding.toolbar);
 
-        if (getIntent().getAction().equals(Intent.ACTION_VIEW)) {
-            FlowrDeepLinkHandler test = new FlowrDeepLinkHandler();
-            test.routeIntentToScreen(getIntent(), getFlowr());
-        } else if (getFlowr().getCurrentFragment() == null) {
-            getFlowr().open(HomeFragment.class)
+        if (getFlowr().getCurrentFragment() == null) {
+            getFlowr().setDeepLinkContext(getIntent())
+                    .open(HomeFragment.class)
                     .skipBackStack(true)
                     .displayFragment();
         }
