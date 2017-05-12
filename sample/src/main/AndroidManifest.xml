@@ -22,8 +22,8 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
-                    android:host="www.fueled.com"
-                    android:scheme="http"
+                    android:host="com.fueled.mobile"
+                    android:scheme="appmobile"
                     android:pathPrefix="/"/>
             </intent-filter>
 

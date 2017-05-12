@@ -35,7 +35,7 @@ public class ViewFragment extends AbstractFragment implements View.OnClickListen
         binding.drawerSwitch.setOnCheckedChangeListener(this);
         binding.toolbarSwitch.setOnCheckedChangeListener(this);
          Bundle data = getArguments();
-        if (data != null) {
+        if (data != null && data.containsKey("message")) {
             binding.setMessage(data.getString("message"));
         } else {
             binding.setMessage("View Fragment");

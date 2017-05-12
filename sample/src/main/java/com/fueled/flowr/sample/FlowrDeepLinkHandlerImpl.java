@@ -26,12 +26,12 @@ import java.util.regex.Pattern;
  */
 
 public class FlowrDeepLinkHandlerImpl<T extends Fragment & FlowrFragment> implements FlowrDeepLinkHandler {
-    public static final String url1 = "http://www.fueled.com/test";
+    public static final String url1 = "/test";
     public static final String url2 = "/test2";
-    public static final String url3 = "http://fueled.com/test?message={message}";
-    public static final String url4 = "/test2?message={message}";
-    public static final String url5 = "http://www.fueled.com/test3/{message}/{action}";
-    public static final String url6 = "/test3/{message}";
+    public static final String url3 = "/test?message={message}";
+    public static final String url4 = "/m/{message}";
+    public static final String url5 = "/test3/{message}/{action}";
+    public static final String url6 = "/";
 
 
     public Map<String, Class<? extends T>> linkFragmentMap;
@@ -53,9 +53,11 @@ public class FlowrDeepLinkHandlerImpl<T extends Fragment & FlowrFragment> implem
      * @param pattern The pattern the run against the URI.
      * @return If the URI match a pattern, return a Bundle with the parameters otherwise return null.
      */
-    private static Bundle bundleUriInfo(Uri uri, String pattern) {
-        String regex = getRegexPattern(uri, pattern);
-        Matcher m = Pattern.compile(regex).matcher(uri.toString());
+    private static Bundle bundleUriInfo(@NonNull Uri uri, @NonNull String pattern) {
+        String regex = getRegexPattern(pattern);
+        String path = uri.getPath();
+        Log.w("TEST", path);
+        Matcher m = Pattern.compile(regex).matcher(path);
         if (m.matches()) {
             Bundle data = new Bundle();
             data.putString(Flowr.DEEP_LINK_URL, uri.toString());
@@ -90,20 +92,12 @@ public class FlowrDeepLinkHandlerImpl<T extends Fragment & FlowrFragment> implem
     /**
      * Convert the {variable name} to a valid regex named group.
      *
-     * @param uri     The Uri to use to format pattern if supplied pattern is not a valid Uri.
      * @param pattern the pattern to parse.
      * @return a valid Regex pattern.
      */
     @NonNull
-    private static String getRegexPattern(Uri uri, String pattern) {
-        String normalizedPattern;
-        if (pattern.matches("")) {
-            normalizedPattern = pattern;
-        } else {
-            normalizedPattern = (uri.getScheme() + "://" + uri.getAuthority() + pattern);
-        }
-
-        return normalizedPattern.replaceAll("\\{(.+?)\\}", "(?<$1>\\.+?)");
+    private static String getRegexPattern(@NonNull String pattern) {
+        return pattern.replaceAll("\\{(.+?)\\}", "(?<$1>\\.+?)");
     }
 
     /**
@@ -127,8 +121,8 @@ public class FlowrDeepLinkHandlerImpl<T extends Fragment & FlowrFragment> implem
      */
     @SuppressWarnings("unchecked")
     public FlowrDeepLinkInfo routeIntentToScreen(@NonNull Intent intent) {
-        if (intent.getAction().equals(Intent.ACTION_VIEW)) {
-            Uri uri = intent.getData();
+        Uri uri = intent.getData();
+        if (uri != null) {
             for (String uriPattern : linkFragmentMap.keySet()) {
                 Bundle data = bundleUriInfo(uri, uriPattern);
                 if (data != null) {

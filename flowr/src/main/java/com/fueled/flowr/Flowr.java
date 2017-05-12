@@ -285,18 +285,20 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      */
     @SuppressWarnings("unchecked")
     private <T extends Fragment & FlowrFragment> void injectDeepLinkInfo(TransactionData<T> data) {
-        if (deepLinkIntent != null && deepLinkIntent.getAction().equals(Intent.ACTION_VIEW)) {
+        if (deepLinkIntent != null) {
             try {
                 Constructor<? extends FlowrDeepLinkHandler> deepLinkCtor = findBindingConstructorForClass();
                 if (deepLinkCtor != null) {
                     FlowrDeepLinkHandler deepLinkHandler = deepLinkCtor.newInstance();
                     FlowrDeepLinkInfo info = deepLinkHandler.routeIntentToScreen(deepLinkIntent);
-                    data.setFragmentClass(info.fragment);
-                    Bundle dataArgs = data.getArgs();
-                    if (dataArgs != null) {
-                        data.getArgs().putAll(info.data);
-                    } else {
-                        data.setArgs(info.data);
+                    if (info != null) {
+                        data.setFragmentClass(info.fragment);
+                        Bundle dataArgs = data.getArgs();
+                        if (dataArgs != null) {
+                            data.getArgs().putAll(info.data);
+                        } else {
+                            data.setArgs(info.data);
+                        }
                     }
                 }
             } catch (InstantiationException e) {
