@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="168dp"
+              android:layout_height="@dimen/navigation_header_height"
               android:background="?attr/colorPrimaryDark"
-              android:padding="16dp"
-              android:theme="@style/ThemeOverlay.AppCompat.Dark"
+              android:gravity="bottom"
               android:orientation="vertical"
-              android:gravity="bottom">
+              android:padding="@dimen/space_large"
+              android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <TextView
         android:layout_width="match_parent"

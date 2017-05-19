@@ -77,6 +77,8 @@ public class MainActivity extends AbstractActivity implements ToolbarHandler, Dr
                     case R.id.navigation_menu_categories:
                         displayNavigationScreen(CategoriesFragment.class);
                         break;
+                    default:
+                        break;
                 }
 
                 return true;
