@@ -33,7 +33,7 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
 
     @Override
     public NavigationIconType getNavigationIconType() {
-        return NavigationIconType.HIDDEN;
+        return NavigationIconType.HAMBURGER;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
     }
 
     private void displayViewFragment() {
-        getRouter().open(ViewFragment.class)
+        getFlowr().open(ViewFragment.class)
                 .setCustomTransactionAnimation(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.slide_in_left, android.R.anim.slide_out_right)
                 .displayFragment();
     }

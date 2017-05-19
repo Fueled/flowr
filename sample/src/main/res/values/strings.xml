@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">FlowR Sample</string>
+
+    <!-- Navigation Menu -->
+    <string name="navigation_user_name">Flowr User</string>
+    <string name="navigation_home">Home</string>
+    <string name="navigation_categories">Categories</string>
+
+    <!-- Home Fragment -->
+    <string name="open_view_fragment">Open View Fragment</string>
+
+    <!-- Categories Fragment -->
+    <string name="categories_message">Categories Fragment!</string>
+
+
 </resources>
