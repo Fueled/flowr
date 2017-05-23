@@ -206,6 +206,65 @@ public class DemoFragment extends AbstractFragment<DemoPresenter> implements Dem
 }
 ```
 
+## Deep Link
+FlowR support deep links.
+First, setup the deep link as explained in the [documentation](https://developer.android.com/training/app-indexing/deep-linking.html#adding-filters).
+Then annote your fragment with a `@DeepLink` annotation. That value will be the relative path...
+
+```java
+@DeepLink("/path1/")
+public class TestFragment extends Fragment implement FlowrFragment
+```
+... or two.
+
+```java
+@DeepLink({"/path1/","path2"})
+public class TestFragment extends Fragment implement FlowrFragment
+```
+You can also insert variable:
+
+```java
+@DeepLink("/{id}/details")
+public class TestFragment extends Fragment implement FlowrFragment
+.
+.
+.
+String url = getArguments().getString(Flowr.DEEP_LINK_URL,"");
+String id = getArguments().getString("id","");
+```
+To trigger the deep linking handling, simply call `setDeepLinkContext()`
+
+```java
+getFlowr().setDeepLinkContext(getIntent())
+    .open(HomeFragment.class)
+    .skipBackStack(true)
+    .displayFragment();
+```
+
+Additionally you can access a Fragment via the link attached to it:
+
+```java
+getFlowr()
+    .open("/path1/")
+    .skipBackStack(true)
+    .displayFragment();
+```
+variables work too:
+
+```java
+getFlowr()
+    .open("/1234/details")
+    .skipBackStack(true)
+    .displayFragment();
+```
+
+But don't forget to add those lines to your proguard config:
+
+```
+-keep public class * implements com.fueled.flowr.FlowrConfig
+-keep public class * implements com.fueled.flowr.FlowrDeepLinkHandler
+```
+
 #License
 
     Copyright 2016 Fueled

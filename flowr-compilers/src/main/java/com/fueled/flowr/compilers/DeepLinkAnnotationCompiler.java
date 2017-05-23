@@ -220,7 +220,7 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
      */
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        System.out.println("processing...");
+        System.out.println("[FlowR]: generating deep Link Handler...");
         List<String> fragmentPathList = new ArrayList<>();
         MethodSpec.Builder constructorBuilder = generateConstructor();
         //browse all the annotations and create the FlowrDeepLinkHandler constructor
