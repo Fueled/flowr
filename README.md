@@ -8,6 +8,7 @@ FlowR is a wrapper class around the Fragment Manager. It's mainly used to naviga
 
 ##Install
 Add it in your root build.gradle at the end of repositories:
+
 ```groovy
 	allprojects {
 		repositories {
@@ -17,9 +18,10 @@ Add it in your root build.gradle at the end of repositories:
 	}
 ```
 Then add the dependency to the application module:
+
 ```groovy
 	dependencies {
-		compile 'com.github.fueled:flowr:1.1.1'
+		compile 'com.github.fueled:flowr:1.2.0'
 	}
 ```
 
