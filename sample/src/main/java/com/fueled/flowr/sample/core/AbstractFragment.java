@@ -22,6 +22,8 @@ public abstract class AbstractFragment extends AbstractFlowrFragment {
 
     private Disposable fragmentResultSubscription;
 
+    private String title;
+
     public abstract @LayoutRes int getLayoutId();
 
     protected abstract void setupView(View view);
@@ -40,9 +42,12 @@ public abstract class AbstractFragment extends AbstractFlowrFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         listenToResults();
+
+        title = getString(R.string.app_name);
+        getFlowr().syncScreenState();
     }
 
-    protected Flowr getRouter() {
+    protected Flowr getFlowr() {
         if (getActivity() != null && getActivity() instanceof AbstractActivity) {
             return ((AbstractActivity) getActivity()).getFlowr();
         }
@@ -70,6 +75,6 @@ public abstract class AbstractFragment extends AbstractFlowrFragment {
 
     @Override
     public String getTitle() {
-        return getString(R.string.app_name);
+        return title;
     }
 }

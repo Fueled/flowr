@@ -12,7 +12,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Open View Fragment"/>
+            android:text="@string/open_view_fragment"/>
 
     </FrameLayout>
 

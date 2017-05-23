@@ -1,2 +1,21 @@
 <resources>
+
+    <!-- General -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="space">10dp</dimen>
+    <dimen name="space_large">16dp</dimen>
+
+    <!-- General Text -->
+    <dimen name="text_normal">14sp</dimen>
+    <dimen name="text_medium">16sp</dimen>
+    <dimen name="text_large">18sp</dimen>
+
+    <!-- Navigation Header -->
+    <dimen name="navigation_header_height">168dp</dimen>
+
+    <!-- View Fragment -->
+    <dimen name="view_color_item_size">50dp</dimen>
+    <dimen name="view_row_height">56dp</dimen>
+
 </resources>
