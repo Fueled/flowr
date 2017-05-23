@@ -1,4 +1,4 @@
-package com.fueled.flowr;
+package com.fueled.flowr.internal;
 
 import android.content.Intent;
 

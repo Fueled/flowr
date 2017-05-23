@@ -14,6 +14,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
+import com.fueled.flowr.internal.FlowrConfig;
+import com.fueled.flowr.internal.FlowrDeepLinkHandler;
+import com.fueled.flowr.internal.FlowrDeepLinkInfo;
 import com.fueled.flowr.internal.TransactionData;
 
 import java.lang.reflect.Constructor;

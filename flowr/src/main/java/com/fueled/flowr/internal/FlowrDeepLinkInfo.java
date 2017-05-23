@@ -1,7 +1,9 @@
-package com.fueled.flowr;
+package com.fueled.flowr.internal;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+
+import com.fueled.flowr.FlowrFragment;
 
 /**
  * Class that contains all the necessary info for Deep Links.

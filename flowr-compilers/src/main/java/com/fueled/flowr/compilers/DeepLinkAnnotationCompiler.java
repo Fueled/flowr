@@ -40,10 +40,11 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
     private static final String deeplinkFormat = "addFragment($S, (Class<? extends T>) $T.class)";
     private static final String HANDLER_FILE_NAME = "FlowrDeepLinkHandlerImpl";
     private static final String FLOWR_PACKAGE_NAME = "com.fueled.flowr";
+    private static final String FLOWR_INTERNAL_PACKAGE_NAME = "com.fueled.flowr.internal";
 
     private static final TypeVariableName fragmentTypeVariableName = TypeVariableName.get("T", ClassName.get("android.support.v4.app", "Fragment"), ClassName.get(FLOWR_PACKAGE_NAME, "FlowrFragment"));
     private static final ParameterizedTypeName classExtendsFragmentTypeName = ParameterizedTypeName.get(ClassName.get(Class.class), WildcardTypeName.subtypeOf(fragmentTypeVariableName));
-    private static final ClassName FlowrDeepLinkInfoClassName = ClassName.get(FLOWR_PACKAGE_NAME, "FlowrDeepLinkInfo");
+    private static final ClassName FlowrDeepLinkInfoClassName = ClassName.get(FLOWR_INTERNAL_PACKAGE_NAME, "FlowrDeepLinkInfo");
 
     private static final ClassName bundleClassName = ClassName.get("android.os", "Bundle");
     private static final ClassName uriClassName = ClassName.get("android.net", "Uri");
@@ -76,7 +77,7 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
         return TypeSpec.classBuilder(HANDLER_FILE_NAME)
                 .addTypeVariable(fragmentTypeVariableName)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addSuperinterface(ClassName.get(FLOWR_PACKAGE_NAME, "FlowrDeepLinkHandler"));
+                .addSuperinterface(ClassName.get(FLOWR_INTERNAL_PACKAGE_NAME, "FlowrDeepLinkHandler"));
     }
 
     /**
@@ -245,7 +246,7 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
     private void generateFlowrConfig(String handlerPackage) {
         TypeSpec config = TypeSpec.classBuilder("FlowrConfigImpl")
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addSuperinterface(ClassName.get(FLOWR_PACKAGE_NAME, "FlowrConfig"))
+                .addSuperinterface(ClassName.get(FLOWR_INTERNAL_PACKAGE_NAME, "FlowrConfig"))
                 .addMethod(MethodSpec.methodBuilder("getHandlerPackage")
                         .returns(String.class)
                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)

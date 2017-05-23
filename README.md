@@ -261,8 +261,8 @@ getFlowr()
 But don't forget to add those lines to your proguard config:
 
 ```
--keep public class * implements com.fueled.flowr.FlowrConfig
--keep public class * implements com.fueled.flowr.FlowrDeepLinkHandler
+-keep public class * implements com.fueled.flowr.internal.FlowrConfig
+-keep public class * implements com.fueled.flowr.internal.FlowrDeepLinkHandler
 ```
 
 #License
