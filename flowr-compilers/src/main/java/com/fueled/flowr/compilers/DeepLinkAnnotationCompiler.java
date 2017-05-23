@@ -235,28 +235,52 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
         }
         if (fragmentPathList.size() > 0) {
             final String handlerPackage = generateCanonicalName(fragmentPathList);
-
-            TypeSpec classObject = getClassObject()
-                    .addField(linkFragmentMap())
-                    .addMethod(constructorBuilder.build())
-                    .addMethod(bundleUriInfo())
-                    .addMethod(getRegexPattern())
-                    .addMethod(getNamedGroupCandidates())
-                    .addMethod(addFragment())
-                    .addMethod(routeIntentToScreen())
-                    .build();
-
-            JavaFile javaFile = JavaFile.builder(handlerPackage, classObject)
-                    .build();
-
-            try {
-                javaFile.writeTo(processingEnv.getFiler());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            generateDeepLinkHandler(handlerPackage, constructorBuilder);
+            generateFlowrConfig(handlerPackage);
 
         }
         return true;
+    }
+
+    private void generateFlowrConfig(String handlerPackage) {
+        TypeSpec config = TypeSpec.classBuilder("FlowrConfigImpl")
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                .addSuperinterface(ClassName.get(FLOWR_PACKAGE_NAME, "FlowrConfig"))
+                .addMethod(MethodSpec.methodBuilder("getHandlerPackage")
+                        .returns(String.class)
+                        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                        .addStatement("return $S", handlerPackage + "." + HANDLER_FILE_NAME)
+                        .build())
+                .build();
+        JavaFile javaFile = JavaFile.builder(FLOWR_PACKAGE_NAME, config)
+                .build();
+
+        try {
+            javaFile.writeTo(processingEnv.getFiler());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void generateDeepLinkHandler(String handlerPackage, MethodSpec.Builder constructorBuilder) {
+        TypeSpec classObject = getClassObject()
+                .addField(linkFragmentMap())
+                .addMethod(constructorBuilder.build())
+                .addMethod(bundleUriInfo())
+                .addMethod(getRegexPattern())
+                .addMethod(getNamedGroupCandidates())
+                .addMethod(addFragment())
+                .addMethod(routeIntentToScreen())
+                .build();
+
+        JavaFile javaFile = JavaFile.builder(handlerPackage, classObject)
+                .build();
+
+        try {
+            javaFile.writeTo(processingEnv.getFiler());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

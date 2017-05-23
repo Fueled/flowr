@@ -15,7 +15,7 @@ import com.fueled.flowr.sample.databinding.FragmentViewBinding;
  * Created by hussein@fueled.com on 14/02/2017.
  * Copyright (c) 2017 Fueled. All rights reserved.
  */
-@DeepLink(value = {"/m/{message}","/test2"})
+@DeepLink(value = {"/m/{message}", "/test2"})
 public class ViewFragment extends AbstractFragment implements View.OnClickListener,
         CompoundButton.OnCheckedChangeListener {
 
@@ -37,7 +37,7 @@ public class ViewFragment extends AbstractFragment implements View.OnClickListen
         binding.setClickListener(this);
         binding.drawerSwitch.setOnCheckedChangeListener(this);
         binding.toolbarSwitch.setOnCheckedChangeListener(this);
-         Bundle data = getArguments();
+        Bundle data = getArguments();
         if (data != null && data.containsKey("message")) {
             binding.setMessage(data.getString("message"));
         } else {

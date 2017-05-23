@@ -28,6 +28,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         View.OnClickListener {
 
     public final static String DEEP_LINK_URL = "DEEP_LINK_URL";//to be used as Bundle key for deep links.
+    public final static String FLOWR_CONFIG = "com.fueled.flowr.FlowrConfigImpl"; //Generated file that contain the path to the DeepLinkHandler class.
 
     private final static String KEY_REQUEST_BUNDLE = "KEY_REQUEST_BUNDLE";
     private final static String KEY_FRAGMENT_ID = "KEY_FRAGMENT_ID";
@@ -143,9 +144,12 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         return resultResponse;
     }
 
-    private Constructor<? extends FlowrDeepLinkHandler> findBindingConstructorForClass() throws ClassNotFoundException, NoSuchMethodException {
-        //TODO update to dynamic package extraction like BuildConfig
-        Class<?> bindingClass = getClass().getClassLoader().loadClass("com.fueled.flowr.sample.FlowrDeepLinkHandlerImpl");
+    private Constructor<? extends FlowrDeepLinkHandler> findBindingConstructorForClass() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        //Use reflexion because:
+        //1. The FlowrDeepLinkHandlerImpl location is dynamic based on the location of all the Fragment that support deep link, so we can't rely on a static position like Dagger.
+        //2. Because the FlowrDeepLinkHandlerImpl is generated only when a @DeepLink is used, if the project doesn't use deep linking, the class will never be generated and the project won't compile
+        FlowrConfig config = (FlowrConfig) getClass().getClassLoader().loadClass(FLOWR_CONFIG).getConstructor().newInstance();
+        Class<?> bindingClass = getClass().getClassLoader().loadClass(config.getHandlerPackage());
         //noinspection unchecked
         return (Constructor<? extends FlowrDeepLinkHandler>) bindingClass.getConstructor();
     }
@@ -307,15 +311,15 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
                     }
                 }
             } catch (InstantiationException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             } catch (InvocationTargetException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                // e.printStackTrace();
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
     }
