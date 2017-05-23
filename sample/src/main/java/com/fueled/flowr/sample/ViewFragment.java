@@ -1,6 +1,7 @@
 package com.fueled.flowr.sample;
 
 import android.databinding.DataBindingUtil;
+import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -41,7 +42,6 @@ public class ViewFragment extends AbstractFragment implements View.OnClickListen
             binding.setMessage(data.getString("message"));
         } else {
             binding.setMessage("View Fragment");
-        }
         }
     }
 

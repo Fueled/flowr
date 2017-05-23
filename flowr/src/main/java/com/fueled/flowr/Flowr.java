@@ -2,6 +2,7 @@ package com.fueled.flowr;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.AnimRes;
 import android.support.annotation.IdRes;
@@ -41,6 +42,8 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     private Intent deepLinkIntent;
     private boolean overrideBack;
     private String tagPrefix;
+
+    private FlowrDeepLinkHandler deepLinkHandler;
 
     /**
      * Constructor to use when creating a new router for an activity
@@ -287,18 +290,20 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     private <T extends Fragment & FlowrFragment> void injectDeepLinkInfo(TransactionData<T> data) {
         if (deepLinkIntent != null) {
             try {
-                Constructor<? extends FlowrDeepLinkHandler> deepLinkCtor = findBindingConstructorForClass();
-                if (deepLinkCtor != null) {
-                    FlowrDeepLinkHandler deepLinkHandler = deepLinkCtor.newInstance();
-                    FlowrDeepLinkInfo info = deepLinkHandler.routeIntentToScreen(deepLinkIntent);
-                    if (info != null) {
-                        data.setFragmentClass(info.fragment);
-                        Bundle dataArgs = data.getArgs();
-                        if (dataArgs != null) {
-                            data.getArgs().putAll(info.data);
-                        } else {
-                            data.setArgs(info.data);
-                        }
+                if (deepLinkHandler == null) {
+                    Constructor<? extends FlowrDeepLinkHandler> deepLinkCtor = findBindingConstructorForClass();
+                    if (deepLinkCtor != null) {
+                        deepLinkHandler = deepLinkCtor.newInstance();
+                    }
+                }
+                FlowrDeepLinkInfo info = deepLinkHandler.routeIntentToScreen(deepLinkIntent);
+                if (info != null) {
+                    data.setFragmentClass(info.fragment);
+                    Bundle dataArgs = data.getArgs();
+                    if (dataArgs != null) {
+                        data.getArgs().putAll(info.data);
+                    } else {
+                        data.setArgs(info.data);
                     }
                 }
             } catch (InstantiationException e) {
@@ -533,6 +538,31 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     public <T extends Fragment & FlowrFragment> Builder open(Class<? extends T> fragmentClass) {
         return new Builder<>(fragmentClass);
     }
+
+    /**
+     * Creates a new {@link Builder} instance to be used to display a fragment
+     *
+     * @param deepLinkIntent An Intent to parse and open the appropriate Fragment.
+     * @return a new {@link Builder} instance
+     */
+    public Builder open(Intent deepLinkIntent) {
+        this.deepLinkIntent = deepLinkIntent;
+        return new Builder<>(null);
+    }
+
+    /**
+     * Creates a new {@link Builder} instance to be used to display a fragment
+     *
+     * @param path the path of a Fragment annotated with {@link com.fueled.flowr.annotations.DeepLink}
+     * @return a new {@link Builder} instance
+     */
+    public Builder open(String path) {
+        Uri uri = Uri.parse(path);
+        Intent intent = new Intent();
+        intent.setData(uri);
+        return open(intent);
+    }
+
 
     /**
      * The default enter animation to be used for fragment transactions
