@@ -30,6 +30,10 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
+
+/**
+ * Annotation processor that will generate the FlowrDeepLinkHandlerImpl based on the information provided by {@link com.fueled.flowr.annotations.DeepLink}.
+ */
 @SupportedAnnotationTypes("com.fueled.flowr.annotations.DeepLink")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class DeepLinkAnnotationCompiler extends AbstractProcessor {
@@ -45,6 +49,13 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
     private static final ClassName uriClassName = ClassName.get("android.net", "Uri");
     private static final ParameterizedTypeName listStringTypeName = ParameterizedTypeName.get(List.class, String.class);
 
+    /**
+     * Check if a list of string contains the same substring.
+     *
+     * @param strings The list of String to search
+     * @param pos     The position until where the character are the same.
+     * @return
+     */
     private static boolean allCharactersAreSame(List<String> strings, int pos) {
         String first = strings.get(0);
         for (String curString : strings) {
@@ -56,6 +67,11 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
         return true;
     }
 
+    /**
+     * Create the JavaPoet Type builder for the FlowrDeepLinkHandlerImpl class.
+     *
+     * @return The builder for the FlowrDeepLinkHandlerImpl class.
+     */
     private static TypeSpec.Builder getClassObject() {
         return TypeSpec.classBuilder(HANDLER_FILE_NAME)
                 .addTypeVariable(fragmentTypeVariableName)
@@ -63,6 +79,14 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
                 .addSuperinterface(ClassName.get(FLOWR_PACKAGE_NAME, "FlowrDeepLinkHandler"));
     }
 
+    /**
+     * Create the bundleUriInfo method of FlowrDeepLinkHandlerImpl class. This method extract the variables from a URL and add them to a Bundle.
+     * The structure is <variable, value>.
+     * For example the pattern in the DeepLink annotation \"/user/{userId}\", if the user access the app through \"/user/1234\", the function will return <userId,1234>.
+     * Please note that all the variable will a string.
+     *
+     * @return a Bundle that contains the variables from the deep link.
+     */
     private static MethodSpec bundleUriInfo() {
         return MethodSpec.methodBuilder("bundleUriInfo")
                 .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
@@ -90,6 +114,11 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
 
     }
 
+    /**
+     * Create the getRegexPattern method that generate the regular expression to extract variables form a URL.
+     *
+     * @return RegExp to extract variables form a URL.
+     */
     private static MethodSpec getRegexPattern() {
         return MethodSpec.methodBuilder("getRegexPattern")
                 .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
@@ -99,6 +128,11 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
                 .build();
     }
 
+    /**
+     * Create the getNamedGroupCandidates method. The method is used by {@link #bundleUriInfo()}
+     *
+     * @return A list of the variables in a pattern.
+     */
     private static MethodSpec getNamedGroupCandidates() {
         return MethodSpec.methodBuilder("getNamedGroupCandidates")
                 .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
@@ -117,6 +151,11 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
                 .build();
     }
 
+    /**
+     * Create the routeIntentToScreen method. This method find the Fragment associated with the URL in the intent, extract the variables and set it as {@link com.fueled.flowr.Flowr#currentFragment}
+     *
+     * @return The routeIntentToScreen JavaPoet object.
+     */
     private static MethodSpec routeIntentToScreen() {
         return MethodSpec.methodBuilder("routeIntentToScreen")
                 .addModifiers(Modifier.PUBLIC)
@@ -135,12 +174,22 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
                 .build();
     }
 
+    /**
+     * Create the constructor for FlowrDeepLinkHandlerImpl.
+     *
+     * @return The Constructor JavaPoet object.
+     */
     private static MethodSpec.Builder generateConstructor() {
         return MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addStatement("linkFragmentMap = new $T()", HashMap.class);
     }
 
+    /**
+     * Create addFragment method. This method add a Fragment associated with a deep link to the list of Fragment.
+     *
+     * @return The addFragment JavaPoet object.
+     */
     private static MethodSpec addFragment() {
         return MethodSpec.methodBuilder("addFragment")
                 .addModifiers(Modifier.PRIVATE)
@@ -151,12 +200,24 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
                 .build();
     }
 
+    /**
+     * Create the linkFragmentMap field.
+     *
+     * @return The linkFragmentMap JavaPoet object.
+     */
     private static FieldSpec linkFragmentMap() {
         return FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(Map.class), TypeName.get(String.class), classExtendsFragmentTypeName), "linkFragmentMap")
                 .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                 .build();
     }
 
+    /**
+     * Main method that will build the FlowrDeepLinkHandlerImpl.
+     *
+     * @param annotations the list of Annotations.
+     * @param roundEnv    The environment object.
+     * @return
+     */
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         System.out.println("processing...");
@@ -198,6 +259,12 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
         return true;
     }
 
+    /**
+     * Compute the best package to generate FlowrDeepLinkHandlerImpl in.
+     *
+     * @param fragmentPathList list of the fragment that support deep link.
+     * @return The best package to generate FlowrDeepLinkHandlerImpl in.
+     */
     private String generateCanonicalName(List<String> fragmentPathList) {
         String packagePath;
         if (fragmentPathList.size() > 1) {
