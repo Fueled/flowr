@@ -6,7 +6,7 @@ FlowR is a wrapper class around the Fragment Manager. It's mainly used to naviga
 * Ability to open fragments for result.
 * Keeping the state of the activity correctly synced depending on the custom values specified by the fragment currently visible such as the screen orientation and navigation bar color.
 
-##Install
+## Install
 Add it in your root build.gradle at the end of repositories:
 
 ```groovy
@@ -267,7 +267,7 @@ But don't forget to add those lines to your proguard config:
 -keep public class * implements com.fueled.flowr.internal.FlowrDeepLinkHandler
 ```
 
-#License
+# License
 
     Copyright 2016 Fueled
 
