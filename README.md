@@ -21,8 +21,8 @@ Then add the dependency to the application module:
 
 ```groovy
 	dependencies {
-		annotationProcessor 'com.github.Fueled.flowr:flowr-compilers:1.2.1'
-		compile 'com.github.fueled:flowr:1.2.1'
+		annotationProcessor 'com.github.Fueled.flowr:flowr-compiler:1.2.2'
+		compile 'com.github.fueled:flowr:1.2.2'
 	}
 ```
 
