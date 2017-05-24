@@ -286,13 +286,8 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     private <T extends Fragment & FlowrFragment> void injectDeepLinkInfo(TransactionData<T> data) {
         Intent deepLinkIntent = data.getDeepLinkIntent();
         if (deepLinkIntent != null) {
-            try {
-                if (deepLinkHandler == null) {
-                    Constructor<? extends FlowrDeepLinkHandler> deepLinkCtor = findBindingConstructorForClass();
-                    if (deepLinkCtor != null) {
-                        deepLinkHandler = deepLinkCtor.newInstance();
-                    }
-                }
+            deepLinkHandler = getDeepLinkHandler();
+            if (deepLinkHandler != null) {
                 FlowrDeepLinkInfo info = deepLinkHandler.routeIntentToScreen(deepLinkIntent);
                 if (info != null) {
                     data.setFragmentClass(info.fragment);
@@ -303,8 +298,6 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
                         data.setArgs(info.data);
                     }
                 }
-            } catch (Exception e) {
-                Log.e(TAG, "Error retrieving DeeplinkHandler", e);
             }
         }
     }
@@ -609,6 +602,25 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         setRouterScreen(null);
         setToolbarHandler(null);
         setDrawerHandler(null);
+    }
+
+    /**
+     * return the {@link FlowrDeepLinkHandler} if already initialized or initialize one.
+     *
+     * @return Initialized {@link FlowrDeepLinkHandler}
+     */
+    public FlowrDeepLinkHandler getDeepLinkHandler() {
+        try {
+            if (deepLinkHandler == null) {
+                Constructor<? extends FlowrDeepLinkHandler> deepLinkCtor = findBindingConstructorForClass();
+                if (deepLinkCtor != null) {
+                    deepLinkHandler = deepLinkCtor.newInstance();
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error retrieving DeeplinkHandler", e);
+        }
+        return deepLinkHandler;
     }
 
     /**
