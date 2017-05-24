@@ -42,7 +42,7 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
     }
 
     private void displayViewFragment() {
-        getFlowr().open(ViewFragment.class)
+        getFlowr().open("/m/From%20HomeFragment")
                 .setCustomTransactionAnimation(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.slide_in_left, android.R.anim.slide_out_right)
                 .displayFragment();
     }

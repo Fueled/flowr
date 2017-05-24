@@ -35,7 +35,8 @@ public class MainActivity extends AbstractActivity implements ToolbarHandler, Dr
         setSupportActionBar(binding.toolbar);
 
         if (getFlowr().getCurrentFragment() == null) {
-            getFlowr().open(HomeFragment.class)
+            getFlowr()
+                    .open(getIntent(), HomeFragment.class)
                     .skipBackStack(true)
                     .displayFragment();
         }

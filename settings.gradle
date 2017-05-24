@@ -1,1 +1,1 @@
-include ':flowr', ':sample'
+include ':flowr', ':sample', ':flowr-annotations', ':flowr-compilers'

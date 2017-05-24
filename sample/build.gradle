@@ -33,6 +33,8 @@ dependencies {
 
     compile project(':flowr')
 
+    annotationProcessor project(':flowr-compilers')
+
     compile libraries.appCompat
     compile libraries.designSupport
 

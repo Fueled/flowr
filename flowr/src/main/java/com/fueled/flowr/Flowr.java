@@ -1,6 +1,8 @@
 package com.fueled.flowr;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.AnimRes;
 import android.support.annotation.IdRes;
@@ -11,7 +13,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
+import com.fueled.flowr.internal.FlowrConfig;
+import com.fueled.flowr.internal.FlowrDeepLinkHandler;
+import com.fueled.flowr.internal.FlowrDeepLinkInfo;
 import com.fueled.flowr.internal.TransactionData;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 
 /**
@@ -21,10 +29,12 @@ import com.fueled.flowr.internal.TransactionData;
 public class Flowr implements FragmentManager.OnBackStackChangedListener,
         View.OnClickListener {
 
+    public final static String DEEP_LINK_URL = "DEEP_LINK_URL";//to be used as Bundle key for deep links.
+    public final static String FLOWR_CONFIG = "com.fueled.flowr.FlowrConfigImpl"; //Generated file that contain the path to the DeepLinkHandler class.
+
     private final static String KEY_REQUEST_BUNDLE = "KEY_REQUEST_BUNDLE";
     private final static String KEY_FRAGMENT_ID = "KEY_FRAGMENT_ID";
     private final static String KEY_REQUEST_CODE = "KEY_REQUEST_CODE";
-
     private final static String TAG = Flowr.class.getSimpleName();
     private final FragmentsResultPublisher resultPublisher;
     private final int mainContainerId;
@@ -32,9 +42,11 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     private ToolbarHandler toolbarHandler;
     private DrawerHandler drawerHandler;
     private Fragment currentFragment;
-
     private boolean overrideBack;
     private String tagPrefix;
+
+    private FlowrDeepLinkHandler deepLinkHandler;
+
 
     /**
      * Constructor to use when creating a new router for an activity
@@ -134,6 +146,17 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         return resultResponse;
     }
 
+    private Constructor<? extends FlowrDeepLinkHandler> findBindingConstructorForClass() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        //Use reflexion because:
+        //1. The FlowrDeepLinkHandlerImpl location is dynamic based on the location of all the Fragment that support deep link, so we can't rely on a static position like Dagger.
+        //2. Because the FlowrDeepLinkHandlerImpl is generated only when a @DeepLink is used, if the project doesn't use deep linking, the class will never be generated and the project won't compile
+        FlowrConfig config = (FlowrConfig) getClass().getClassLoader().loadClass(FLOWR_CONFIG).getConstructor().newInstance();
+        Class<?> bindingClass = getClass().getClassLoader().loadClass(config.getHandlerPackage());
+        //noinspection unchecked
+        return (Constructor<? extends FlowrDeepLinkHandler>) bindingClass.getConstructor();
+    }
+
+
     /**
      * Returns the {@link FlowrScreen} used for this router.
      *
@@ -209,6 +232,9 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
     protected <T extends Fragment & FlowrFragment> void displayFragment(TransactionData<T> data) {
         try {
+
+            injectDeepLinkInfo(data);
+
             if (data.isClearBackStack()) {
                 clearBackStack();
             }
@@ -247,6 +273,32 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
         } catch (Exception e) {
             Log.e(TAG, "Error while displaying fragment.", e);
+        }
+    }
+
+    /**
+     * Parse the intent set by {@link TransactionData#deepLinkIntent} and if this intent contains Deep Link info, update the {@link #currentFragment} and the Transaction data.
+     *
+     * @param data The Transaction data to extend if Deep link info are found in the {@link TransactionData#deepLinkIntent}.
+     * @param <T>  The generic type for a valid Fragment.
+     */
+    @SuppressWarnings("unchecked")
+    private <T extends Fragment & FlowrFragment> void injectDeepLinkInfo(TransactionData<T> data) {
+        Intent deepLinkIntent = data.getDeepLinkIntent();
+        if (deepLinkIntent != null) {
+            deepLinkHandler = getDeepLinkHandler();
+            if (deepLinkHandler != null) {
+                FlowrDeepLinkInfo info = deepLinkHandler.routeIntentToScreen(deepLinkIntent);
+                if (info != null) {
+                    data.setFragmentClass(info.fragment);
+                    Bundle dataArgs = data.getArgs();
+                    if (dataArgs != null) {
+                        data.getArgs().putAll(info.data);
+                    } else {
+                        data.setArgs(info.data);
+                    }
+                }
+            }
         }
     }
 
@@ -470,6 +522,42 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     }
 
     /**
+     * Creates a new {@link Builder} instance to be used to display a fragment
+     *
+     * @param deepLinkIntent An Intent to parse and open the appropriate Fragment.
+     * @return a new {@link Builder} instance
+     */
+    public Builder open(Intent deepLinkIntent) {
+        return new Builder<>(deepLinkIntent);
+    }
+
+    /**
+     * Creates a new {@link Builder} instance to be used to display a fragment.
+     *
+     * @param intent        An intent that contains a possible Deep link.
+     * @param fragmentClass The fragment to use if the intent doesn't contain a Deep Link.
+     * @param <T>           The proper Fragment type.
+     * @return a new {@link Builder} instance
+     */
+    public <T extends Fragment & FlowrFragment> Builder open(Intent intent, Class<? extends T> fragmentClass) {
+        return new Builder<>(intent, fragmentClass);
+    }
+
+    /**
+     * Creates a new {@link Builder} instance to be used to display a fragment
+     *
+     * @param path the path of a Fragment annotated with {@link com.fueled.flowr.annotations.DeepLink}
+     * @return a new {@link Builder} instance
+     */
+    public Builder open(String path) {
+        Uri uri = Uri.parse(path);
+        Intent intent = new Intent();
+        intent.setData(uri);
+        return open(intent);
+    }
+
+
+    /**
      * The default enter animation to be used for fragment transactions
      *
      * @return the default fragment enter animation
@@ -517,6 +605,25 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     }
 
     /**
+     * return the {@link FlowrDeepLinkHandler} if already initialized or initialize one.
+     *
+     * @return Initialized {@link FlowrDeepLinkHandler}
+     */
+    public FlowrDeepLinkHandler getDeepLinkHandler() {
+        try {
+            if (deepLinkHandler == null) {
+                Constructor<? extends FlowrDeepLinkHandler> deepLinkCtor = findBindingConstructorForClass();
+                if (deepLinkCtor != null) {
+                    deepLinkHandler = deepLinkCtor.newInstance();
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error retrieving DeeplinkHandler", e);
+        }
+        return deepLinkHandler;
+    }
+
+    /**
      * This builder class is used to show a new fragment inside the current activity
      */
     public class Builder<T extends Fragment & FlowrFragment> {
@@ -527,6 +634,20 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
             data = new TransactionData<>(fragmentClass, getDefaultEnterAnimation(),
                     getDefaultExitAnimation(), getDefaultPopEnterAnimation(),
                     getDefaultPopExitAnimation());
+        }
+
+        public Builder(Intent intent) {
+            data = new TransactionData<>(null, getDefaultEnterAnimation(),
+                    getDefaultExitAnimation(), getDefaultPopEnterAnimation(),
+                    getDefaultPopExitAnimation());
+            data.setDeepLinkIntent(intent);
+        }
+
+        public Builder(Intent intent, Class<? extends T> fragmentClass) {
+            data = new TransactionData<>(fragmentClass, getDefaultEnterAnimation(),
+                    getDefaultExitAnimation(), getDefaultPopEnterAnimation(),
+                    getDefaultPopExitAnimation());
+            data.setDeepLinkIntent(intent);
         }
 
         /**

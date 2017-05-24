@@ -28,6 +28,7 @@ dependencies {
 
     compile libraries.appCompat
 
+    compile project(':flowr-annotations')
     // Test
     testCompile testLibraries.hamcrest
     testCompile testLibraries.junit
