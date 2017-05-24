@@ -36,7 +36,7 @@ public class MainActivity extends AbstractActivity implements ToolbarHandler, Dr
 
         if (getFlowr().getCurrentFragment() == null) {
             getFlowr()
-                    .open(HomeFragment.class)
+                    .open(getIntent(), HomeFragment.class)
                     .skipBackStack(true)
                     .displayFragment();
         }
@@ -51,7 +51,7 @@ public class MainActivity extends AbstractActivity implements ToolbarHandler, Dr
                     FragmentResultPublisherImpl.getInstance());
         }
 
-        return flowr.setDeepLinkContext(getIntent());
+        return flowr;
     }
 
     private void setToolbarNavigationClickListener() {

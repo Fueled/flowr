@@ -234,11 +234,11 @@ public class TestFragment extends Fragment implement FlowrFragment
 String url = getArguments().getString(Flowr.DEEP_LINK_URL,"");
 String id = getArguments().getString("id","");
 ```
-To trigger the deep linking handling, simply call `setDeepLinkContext()`
+To trigger the deep linking handling, simply call `open(Intent, Fragment))`
 
 ```java
-getFlowr().setDeepLinkContext(getIntent())
-    .open(HomeFragment.class)
+getFlowr()
+    .open(getIntent(), HomeFragment.class)
     .skipBackStack(true)
     .displayFragment();
 ```

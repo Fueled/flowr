@@ -1,5 +1,6 @@
 package com.fueled.flowr.internal;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -21,6 +22,7 @@ public final class TransactionData<T extends Fragment & FlowrFragment> {
     private int exitAnim;
     private int popEnterAnim;
     private int popExitAnim;
+    private Intent deepLinkIntent;
 
     public TransactionData(Class<? extends T> fragmentClass) {
         this(fragmentClass, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE);
@@ -38,6 +40,14 @@ public final class TransactionData<T extends Fragment & FlowrFragment> {
         this.exitAnim = exitAnim;
         this.popEnterAnim = popEnterAnim;
         this.popExitAnim = popExitAnim;
+    }
+
+    public Intent getDeepLinkIntent() {
+        return deepLinkIntent;
+    }
+
+    public void setDeepLinkIntent(Intent deepLinkIntent) {
+        this.deepLinkIntent = deepLinkIntent;
     }
 
     public int getPopEnterAnim() {
