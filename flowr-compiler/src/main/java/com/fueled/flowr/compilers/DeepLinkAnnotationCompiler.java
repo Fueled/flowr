@@ -290,7 +290,7 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
      * @param fragmentPathList list of the fragment that support deep link.
      * @return The best package to generate FlowrDeepLinkHandlerImpl in.
      */
-    private String generateCanonicalName(List<String> fragmentPathList) {
+    protected String generateCanonicalName(List<String> fragmentPathList) {
         String packagePath;
         if (fragmentPathList.size() > 1) {
             int commonPrefixLength = 0;
@@ -301,6 +301,6 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
         } else {
             packagePath = fragmentPathList.get(0).replaceFirst("\\.([A-Za-z]+)$", "");
         }
-        return packagePath;
+        return packagePath.replaceAll("\\.$", "");
     }
 }
