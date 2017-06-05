@@ -49,6 +49,8 @@ public class MainActivity extends AbstractActivity implements ToolbarHandler, Dr
         if (flowr == null) {
             flowr = new Flowr(R.id.main_container, this, this, this,
                     FragmentResultPublisherImpl.getInstance());
+
+            flowr.setDeepLinkHandlers(new MainDeepLinkHandlerImpl());
         }
 
         return flowr;

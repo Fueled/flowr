@@ -7,7 +7,11 @@ version = libraryVersion
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(path: ':flowr-annotations')
+
     compile libraries.javaPoet
+    compile libraries.autoCommon
+    compile libraries.autoService
+
     testCompile testLibraries.hamcrest
     testCompile testLibraries.junit
     testCompile testLibraries.mockito

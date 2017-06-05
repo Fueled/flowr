@@ -30,6 +30,8 @@ ext {
     mockitoVersion = '1.10.19'
 
     javaPoetVersion = '1.8.0'
+    autoCommon = '0.8'
+    autoService = '1.0-rc3'
 
 
     libraries = [
@@ -39,7 +41,10 @@ ext {
 
             rxJava       : "io.reactivex.rxjava2:rxjava:${rxJavaVersion}",
             rxAndroid    : "io.reactivex.rxjava2:rxandroid:${rxAndroidVersion}",
-            javaPoet     : "com.squareup:javapoet:${javaPoetVersion}"
+            javaPoet     : "com.squareup:javapoet:${javaPoetVersion}",
+
+            autoCommon   : "com.google.auto:auto-common:${autoCommon}",
+            autoService  : "com.google.auto.service:auto-service:${autoService}"
     ]
 
     testLibraries = [
