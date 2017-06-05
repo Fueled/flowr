@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.Fragment;
 
 import com.fueled.flowr.Flowr;
@@ -52,13 +53,13 @@ public class AbstractFlowrDeepLinkHandler<T extends Fragment & FlowrFragment>
      * @return a bundle containing all path variables and parameters as strings.
      */
     @Nullable
-    private static Bundle bundleUriInfo(Uri uri, String pattern) {
+    private Bundle bundleUriInfo(Uri uri, String pattern) {
         String regex = getRegexPattern(pattern);
         String path = uri.getPath();
         Matcher m = Pattern.compile(regex).matcher(path);
 
         if (m.matches()) {
-            Bundle data = new Bundle();
+            Bundle data = getNewBundle();
             data.putString(Flowr.DEEP_LINK_URL, uri.toString());
             Iterator<String> params = getNamedGroupCandidates(regex).iterator();
 
@@ -76,11 +77,11 @@ public class AbstractFlowrDeepLinkHandler<T extends Fragment & FlowrFragment>
         return null;
     }
 
-    private static String getRegexPattern(String pattern) {
+    private String getRegexPattern(String pattern) {
         return pattern.replaceAll("\\{(.+?)\\}", "(?<$1>\\.+?)");
     }
 
-    private static List<String> getNamedGroupCandidates(String regex) {
+    private List<String> getNamedGroupCandidates(String regex) {
         List<String> namedGroups = new ArrayList<>();
 
         Matcher m = NAMED_PARAM_PATTERN.matcher(regex);
@@ -93,11 +94,16 @@ public class AbstractFlowrDeepLinkHandler<T extends Fragment & FlowrFragment>
         return namedGroups;
     }
 
+    @VisibleForTesting
+    protected Bundle getNewBundle() {
+        return new Bundle();
+    }
+
     /**
      * @inheritDoc
      */
     @Nullable
-    public FlowrDeepLinkInfo getDeepLinkInfoForIntent(@NonNull Intent intent) {
+    public FlowrDeepLinkInfo<T> getDeepLinkInfoForIntent(@NonNull Intent intent) {
         Uri uri = intent.getData();
 
         if (uri != null) {

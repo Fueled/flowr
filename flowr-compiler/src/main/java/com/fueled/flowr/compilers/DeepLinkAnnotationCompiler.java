@@ -15,6 +15,8 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -26,6 +28,7 @@ import javax.lang.model.element.TypeElement;
  */
 @SupportedAnnotationTypes({"com.fueled.flowr.annotations.DeepLink",
         "com.fueled.flowr.annotations.DeepLinkHandler"})
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 @AutoService(Processor.class)
 public class DeepLinkAnnotationCompiler extends AbstractProcessor {
 
