@@ -18,7 +18,7 @@ import com.fueled.flowr.sample.core.AbstractActivity;
 import com.fueled.flowr.sample.core.AbstractFragment;
 import com.fueled.flowr.sample.core.FragmentResultPublisherImpl;
 import com.fueled.flowr.sample.databinding.ActivityMainBinding;
-
+import com.fueled.flowr.sample.library.LibraryDeepLinkHandlerImpl;
 
 public class MainActivity extends AbstractActivity implements ToolbarHandler, DrawerHandler {
 
@@ -50,7 +50,8 @@ public class MainActivity extends AbstractActivity implements ToolbarHandler, Dr
             flowr = new Flowr(R.id.main_container, this, this, this,
                     FragmentResultPublisherImpl.getInstance());
 
-            flowr.setDeepLinkHandlers(new MainDeepLinkHandlerImpl());
+            flowr.setDeepLinkHandlers(new MainDeepLinkHandlerImpl(),
+                    new LibraryDeepLinkHandlerImpl());
         }
 
         return flowr;

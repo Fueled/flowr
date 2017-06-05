@@ -8,6 +8,7 @@
 
     <!-- Home Fragment -->
     <string name="open_view_fragment">Open View Fragment</string>
+    <string name="open_link_fragment">Open Link Fragment</string>
 
     <!-- Categories Fragment -->
     <string name="categories_message">Categories Fragment!</string>

@@ -24,6 +24,7 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
     protected void setupView(View view) {
         binding = DataBindingUtil.bind(view);
         binding.homeOpenViewButton.setOnClickListener(this);
+        binding.homeOpenLinkButton.setOnClickListener(this);
     }
 
     @Override
@@ -38,12 +39,22 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
-        displayViewFragment();
+        if (getId() == R.id.home_open_view_button) {
+            displayViewFragment();
+        } else {
+            displayLinkFragment();
+        }
     }
 
     private void displayViewFragment() {
         getFlowr().open("/m/From%20HomeFragment")
-                .setCustomTransactionAnimation(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                .setCustomTransactionAnimation(android.R.anim.fade_in, android.R.anim.fade_out,
+                        android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                .displayFragment();
+    }
+
+    private void displayLinkFragment() {
+        getFlowr().open("/hello")
                 .displayFragment();
     }
 }
