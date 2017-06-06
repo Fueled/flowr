@@ -61,7 +61,12 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
         for (Element element : roundEnv.getElementsAnnotatedWith(DeepLinkHandler.class)) {
             String packageName = processingEnv.getElementUtils().getPackageOf(element)
                     .getQualifiedName().toString();
-            String className = element.getSimpleName().toString();
+
+            String className = element.getAnnotation(DeepLinkHandler.class).value();
+
+            if (className.isEmpty()) {
+                className = element.getSimpleName().toString() + HANDLER_FILE_NAME_POST_FIX;
+            }
 
             generateDeepLinkHandler(packageName, className, constructorBuilder);
         }
@@ -72,12 +77,11 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
     /**
      * Create the JavaPoet Type builder for an AbstractFlowrDeepLinkHandler implementation class.
      *
-     * @param className the name to be used for the implementation class appended
-     *                           by {@link #HANDLER_FILE_NAME_POST_FIX}
+     * @param className the name to be used for the implementation class.
      * @return The builder for the implementation class.
      */
     private static TypeSpec.Builder getClassObject(String className) {
-        return TypeSpec.classBuilder(className + HANDLER_FILE_NAME_POST_FIX)
+        return TypeSpec.classBuilder(className)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .superclass(ClassName.get(FLOWR_INTERNAL_PACKAGE_NAME, ABSTRACT_HANDLER_CLASS_NAME));
     }
@@ -97,8 +101,7 @@ public class DeepLinkAnnotationCompiler extends AbstractProcessor {
      * class name and the constructor body.
      *
      * @param packageName        the name of the package to use for the generated class.
-     * @param className          the name to be used for the implementation class appended
-     *                           by {@link #HANDLER_FILE_NAME_POST_FIX}
+     * @param className          the name to be used for the implementation class.
      * @param constructorBuilder the constructor body builder for the class.
      */
     private void generateDeepLinkHandler(String packageName, String className,

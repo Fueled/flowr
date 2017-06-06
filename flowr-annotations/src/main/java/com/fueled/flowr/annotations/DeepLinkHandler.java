@@ -12,4 +12,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 public @interface DeepLinkHandler {
+
+    /**
+     * The name of the generated deep link handler class, by default this will be the name
+     * of the class annotated with "Impl" appended at the end.
+     *
+     * @return the name to be used for the generated class.
+     */
+    String value() default "";
+
 }
