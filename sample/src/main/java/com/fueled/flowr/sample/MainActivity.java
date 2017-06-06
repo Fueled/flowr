@@ -14,12 +14,14 @@ import com.fueled.flowr.DrawerHandler;
 import com.fueled.flowr.Flowr;
 import com.fueled.flowr.NavigationIconType;
 import com.fueled.flowr.ToolbarHandler;
+import com.fueled.flowr.annotations.DeepLinkHandler;
 import com.fueled.flowr.sample.core.AbstractActivity;
 import com.fueled.flowr.sample.core.AbstractFragment;
 import com.fueled.flowr.sample.core.FragmentResultPublisherImpl;
 import com.fueled.flowr.sample.databinding.ActivityMainBinding;
+import com.fueled.flowr.sample.library.LibraryDeepLinkHandlerImpl;
 
-
+@DeepLinkHandler("MainDeepLinkHandlerImpl")
 public class MainActivity extends AbstractActivity implements ToolbarHandler, DrawerHandler {
 
     private Flowr flowr;
@@ -49,6 +51,9 @@ public class MainActivity extends AbstractActivity implements ToolbarHandler, Dr
         if (flowr == null) {
             flowr = new Flowr(R.id.main_container, this, this, this,
                     FragmentResultPublisherImpl.getInstance());
+
+            flowr.setDeepLinkHandlers(new MainDeepLinkHandlerImpl(),
+                    new LibraryDeepLinkHandlerImpl());
         }
 
         return flowr;

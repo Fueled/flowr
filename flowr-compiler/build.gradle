@@ -1,5 +1,9 @@
+import org.gradle.internal.jvm.Jvm
+
 apply plugin: 'java'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'checkstyle'
+apply from: "../extra/checkstyle/checkstyle_java_library.gradle"
 
 group = libraryGroup
 version = libraryVersion
@@ -7,10 +11,19 @@ version = libraryVersion
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(path: ':flowr-annotations')
+
     compile libraries.javaPoet
+    compile libraries.autoCommon
+    compile libraries.autoService
+
+    testCompile project(':flowr-mock-classes')
+    testCompile testLibraries.junit
     testCompile testLibraries.hamcrest
     testCompile testLibraries.junit
     testCompile testLibraries.mockito
+    testCompile testLibraries.compileTesting
+    testCompile testLibraries.googleTruth
+    testCompile files(Jvm.current().getToolsJar())
 }
 
 

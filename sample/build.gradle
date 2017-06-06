@@ -32,8 +32,9 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     compile project(':flowr')
-
     annotationProcessor project(':flowr-compiler')
+
+    compile project(':sample-library')
 
     compile libraries.appCompat
     compile libraries.designSupport

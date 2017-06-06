@@ -1,5 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'checkstyle'
+apply from: "../extra/checkstyle/checkstyle_java_library.gradle"
 
 group = libraryGroup
 version = libraryVersion

@@ -13,14 +13,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
-import com.fueled.flowr.internal.FlowrConfig;
 import com.fueled.flowr.internal.FlowrDeepLinkHandler;
 import com.fueled.flowr.internal.FlowrDeepLinkInfo;
 import com.fueled.flowr.internal.TransactionData;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by hussein@fueled.com on 31/05/2016.
@@ -29,23 +28,30 @@ import java.lang.reflect.InvocationTargetException;
 public class Flowr implements FragmentManager.OnBackStackChangedListener,
         View.OnClickListener {
 
-    public final static String DEEP_LINK_URL = "DEEP_LINK_URL";//to be used as Bundle key for deep links.
-    public final static String FLOWR_CONFIG = "com.fueled.flowr.FlowrConfigImpl"; //Generated file that contain the path to the DeepLinkHandler class.
+    /**
+     * To be used as Bundle key for deep links.
+     */
+    public final static String DEEP_LINK_URL = "DEEP_LINK_URL";
 
     private final static String KEY_REQUEST_BUNDLE = "KEY_REQUEST_BUNDLE";
     private final static String KEY_FRAGMENT_ID = "KEY_FRAGMENT_ID";
     private final static String KEY_REQUEST_CODE = "KEY_REQUEST_CODE";
+
     private final static String TAG = Flowr.class.getSimpleName();
+
     private final FragmentsResultPublisher resultPublisher;
     private final int mainContainerId;
+
     private FlowrScreen screen;
     private ToolbarHandler toolbarHandler;
     private DrawerHandler drawerHandler;
+
     private Fragment currentFragment;
+
     private boolean overrideBack;
     private String tagPrefix;
 
-    private FlowrDeepLinkHandler deepLinkHandler;
+    private List<FlowrDeepLinkHandler> deepLinkHandlers;
 
 
     /**
@@ -117,6 +123,8 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         setToolbarHandler(toolbarHandler);
         setDrawerHandler(drawerHandler);
 
+        deepLinkHandlers = new ArrayList<>();
+
         syncScreenState();
     }
 
@@ -144,16 +152,6 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         resultResponse.requestCode = requestBundle.getInt(KEY_REQUEST_CODE);
 
         return resultResponse;
-    }
-
-    private Constructor<? extends FlowrDeepLinkHandler> findBindingConstructorForClass() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        //Use reflexion because:
-        //1. The FlowrDeepLinkHandlerImpl location is dynamic based on the location of all the Fragment that support deep link, so we can't rely on a static position like Dagger.
-        //2. Because the FlowrDeepLinkHandlerImpl is generated only when a @DeepLink is used, if the project doesn't use deep linking, the class will never be generated and the project won't compile
-        FlowrConfig config = (FlowrConfig) getClass().getClassLoader().loadClass(FLOWR_CONFIG).getConstructor().newInstance();
-        Class<?> bindingClass = getClass().getClassLoader().loadClass(config.getHandlerPackage());
-        //noinspection unchecked
-        return (Constructor<? extends FlowrDeepLinkHandler>) bindingClass.getConstructor();
     }
 
 
@@ -222,6 +220,20 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     }
 
     /**
+     * Specify a collection of {@link FlowrDeepLinkHandler} to be used when routing deep link
+     * intents replacing all previously set handlers.
+     *
+     * @param handlers the collection of handlers to be used.
+     */
+    public void setDeepLinkHandlers(FlowrDeepLinkHandler... handlers) {
+        this.deepLinkHandlers.clear();
+
+        if (handlers != null) {
+            Collections.addAll(deepLinkHandlers, handlers);
+        }
+    }
+
+    /**
      * Returns the prefix used for the backstack fragments tag
      *
      * @return the prefix used for the backstack fragments tag
@@ -277,18 +289,20 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     }
 
     /**
-     * Parse the intent set by {@link TransactionData#deepLinkIntent} and if this intent contains Deep Link info, update the {@link #currentFragment} and the Transaction data.
+     * Parse the intent set by {@link TransactionData#deepLinkIntent} and if this intent contains
+     * Deep Link info, update the {@link #currentFragment} and the Transaction data.
      *
-     * @param data The Transaction data to extend if Deep link info are found in the {@link TransactionData#deepLinkIntent}.
+     * @param data The Transaction data to extend if Deep link info are found in
+     *             the {@link TransactionData#deepLinkIntent}.
      * @param <T>  The generic type for a valid Fragment.
      */
     @SuppressWarnings("unchecked")
     private <T extends Fragment & FlowrFragment> void injectDeepLinkInfo(TransactionData<T> data) {
         Intent deepLinkIntent = data.getDeepLinkIntent();
         if (deepLinkIntent != null) {
-            deepLinkHandler = getDeepLinkHandler();
-            if (deepLinkHandler != null) {
-                FlowrDeepLinkInfo info = deepLinkHandler.routeIntentToScreen(deepLinkIntent);
+            for (FlowrDeepLinkHandler handler : deepLinkHandlers) {
+                FlowrDeepLinkInfo info = handler.getDeepLinkInfoForIntent(deepLinkIntent);
+
                 if (info != null) {
                     data.setFragmentClass(info.fragment);
                     Bundle dataArgs = data.getArgs();
@@ -297,6 +311,8 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
                     } else {
                         data.setArgs(info.data);
                     }
+
+                    break;
                 }
             }
         }
@@ -605,25 +621,6 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     }
 
     /**
-     * return the {@link FlowrDeepLinkHandler} if already initialized or initialize one.
-     *
-     * @return Initialized {@link FlowrDeepLinkHandler}
-     */
-    public FlowrDeepLinkHandler getDeepLinkHandler() {
-        try {
-            if (deepLinkHandler == null) {
-                Constructor<? extends FlowrDeepLinkHandler> deepLinkCtor = findBindingConstructorForClass();
-                if (deepLinkCtor != null) {
-                    deepLinkHandler = deepLinkCtor.newInstance();
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error retrieving DeeplinkHandler", e);
-        }
-        return deepLinkHandler;
-    }
-
-    /**
      * This builder class is used to show a new fragment inside the current activity
      */
     public class Builder<T extends Fragment & FlowrFragment> {
@@ -691,7 +688,8 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
          * @param exitAnim  the fragment exit animation.
          */
         public Builder setCustomTransactionAnimation(@AnimRes int enterAnim, @AnimRes int exitAnim) {
-            return setCustomTransactionAnimation(enterAnim, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE, exitAnim);
+            return setCustomTransactionAnimation(enterAnim, FragmentTransaction.TRANSIT_NONE,
+                    FragmentTransaction.TRANSIT_NONE, exitAnim);
         }
 
 
@@ -703,8 +701,8 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
          * @param popEnterAnim The animation resource to be used when the previous fragment enters on back pressed.
          * @param popExitAnim  The animation resource to be used when the current fragment exits on back pressed..
          */
-        public Builder setCustomTransactionAnimation(@AnimRes int enterAnim,
-                                                     @AnimRes int exitAnim, @AnimRes int popEnterAnim, @AnimRes int popExitAnim) {
+        public Builder setCustomTransactionAnimation(@AnimRes int enterAnim, @AnimRes int exitAnim,
+                                                     @AnimRes int popEnterAnim, @AnimRes int popExitAnim) {
             data.setEnterAnim(enterAnim);
             data.setExitAnim(exitAnim);
             data.setPopEnterAnim(popEnterAnim);

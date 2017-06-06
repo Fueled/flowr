@@ -28,8 +28,12 @@ ext {
     hamcrestVersion = '1.4-atlassian-1'
     espressoVersion = '2.2.2'
     mockitoVersion = '1.10.19'
+    compileTestingVersion = '0.10'
+    googleTruthVersion = '0.30'
 
     javaPoetVersion = '1.8.0'
+    autoCommon = '0.8'
+    autoService = '1.0-rc3'
 
 
     libraries = [
@@ -39,7 +43,10 @@ ext {
 
             rxJava       : "io.reactivex.rxjava2:rxjava:${rxJavaVersion}",
             rxAndroid    : "io.reactivex.rxjava2:rxandroid:${rxAndroidVersion}",
-            javaPoet     : "com.squareup:javapoet:${javaPoetVersion}"
+            javaPoet     : "com.squareup:javapoet:${javaPoetVersion}",
+
+            autoCommon   : "com.google.auto:auto-common:${autoCommon}",
+            autoService  : "com.google.auto.service:auto-service:${autoService}"
     ]
 
     testLibraries = [
@@ -49,7 +56,9 @@ ext {
             testRule          : "com.android.support.test:rules:${tesetRunnerVersion}",
             hamcrest          : "org.hamcrest:hamcrest-library:${hamcrestVersion}",
             espresso          : "com.android.support.test.espresso:espresso-core:${espressoVersion}",
-            mockito           : "org.mockito:mockito-core:${mockitoVersion}"
+            mockito           : "org.mockito:mockito-core:${mockitoVersion}",
+            compileTesting    : "com.google.testing.compile:compile-testing:${compileTestingVersion}",
+            googleTruth       : "com.google.truth:truth:${googleTruthVersion}"
     ]
 
 }

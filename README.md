@@ -235,13 +235,68 @@ public class TestFragment extends Fragment implement FlowrFragment
 String url = getArguments().getString(Flowr.DEEP_LINK_URL,"");
 String id = getArguments().getString("id","");
 ```
-To trigger the deep linking handling, simply call `open(Intent, Fragment))`
+
+### Deep Linking Setup:
+
+To generate your deep link handler you will need to annotate at least one class with the `@DeepLinkHandler` annotation. The name of the class annotated with the `@DeepLinkHandler` annotation would then be used as the name of the generated handler class with "Impl" appended at the end.
 
 ```java
-getFlowr()
-    .open(getIntent(), HomeFragment.class)
-    .skipBackStack(true)
-    .displayFragment();
+/** This will generate a MainDeepLinkHandlerImpl class */
+@DeepLinkHandler
+public class MainDeepLinkHandler {
+}
+```
+
+However it is also possible to specify a custom name for the generated class by passing the desired class name as a string argument to the `@DeepLinkHandler` annotation.
+
+```java
+/** This will generate a MyDeepLinkHandler class */
+@DeepLinkHandler("MyDeepLinkHandler")
+public class MainActivity extends AbstractActivity {
+}
+```
+
+If you have fragments across multiple modules, you will need to add the `@DeepLinkHandler` annotation to at least one class in each module.
+
+```java
+/** This will generate a LibraryDeepLinkHandlerImpl class */
+@DeepLinkHandler
+public class LibraryDeepLinkHandler {
+}
+```
+
+Provide the list of generated deep link handlers to your flowr instance.
+
+```java
+public class MainActivity extends AbstractActivity {
+
+	private Flowr flowr;
+
+	public void getFlowr() {
+		if (flowr == null) {
+			flowr = new Flowr(...);
+			flowr.setDeepLinkHandlers(new MainDeepLinkHandlerImpl(), new LibraryDeepLinkHandlerImpl());
+		}
+
+		return flowr;
+	}
+}
+```
+
+Finally to trigger the deep linking handling, simply call `open(Intent, Fragment))` from your `Activity#onCreate(Bundle)` method.
+
+```java
+public class MainActivity extends AbstractActivity {
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		...
+		getFlowr()
+		    .open(getIntent(), HomeFragment.class)
+		    .skipBackStack(true)
+		    .displayFragment();
+	}
+}
 ```
 
 Additionally you can access a Fragment via the link attached to it:
@@ -259,13 +314,6 @@ getFlowr()
     .open("/1234/details")
     .skipBackStack(true)
     .displayFragment();
-```
-
-But don't forget to add those lines to your proguard config:
-
-```
--keep public class * implements com.fueled.flowr.internal.FlowrConfig
--keep public class * implements com.fueled.flowr.internal.FlowrDeepLinkHandler
 ```
 
 # License
