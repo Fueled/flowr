@@ -39,7 +39,7 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
-        if (getId() == R.id.home_open_view_button) {
+        if (view.getId() == R.id.home_open_view_button) {
             displayViewFragment();
         } else {
             displayLinkFragment();
