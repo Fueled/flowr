@@ -169,7 +169,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      *
      * @param flowrScreen the router screen to be used
      */
-    protected void setRouterScreen(FlowrScreen flowrScreen) {
+    public void setRouterScreen(FlowrScreen flowrScreen) {
         removeCurrentRouterScreen();
         if (flowrScreen != null) {
             this.screen = flowrScreen;
