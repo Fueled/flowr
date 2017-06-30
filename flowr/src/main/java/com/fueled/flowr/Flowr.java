@@ -509,6 +509,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         }
 
         if (screen != null) {
+            screen.onCurrentFragmentChanged(getCurrentFragment());
             screen.setScreenOrientation(screenOrientation);
             screen.setNavigationBarColor(navigationBarColor);
         }
