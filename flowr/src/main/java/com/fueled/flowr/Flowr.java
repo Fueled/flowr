@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.AnimRes;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -25,6 +27,7 @@ import java.util.List;
  * Created by hussein@fueled.com on 31/05/2016.
  * Copyright (c) 2016 Fueled. All rights reserved.
  */
+@SuppressWarnings({"WeakerAccess", "UnusedDeclaration"}) // Public API.
 public class Flowr implements FragmentManager.OnBackStackChangedListener,
         View.OnClickListener {
 
@@ -42,11 +45,11 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     private final FragmentsResultPublisher resultPublisher;
     private final int mainContainerId;
 
-    private FlowrScreen screen;
-    private ToolbarHandler toolbarHandler;
-    private DrawerHandler drawerHandler;
+    @Nullable private FlowrScreen screen;
+    @Nullable private ToolbarHandler toolbarHandler;
+    @Nullable private DrawerHandler drawerHandler;
 
-    private Fragment currentFragment;
+    @Nullable private Fragment currentFragment;
 
     private boolean overrideBack;
     private String tagPrefix;
@@ -61,7 +64,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      * @param mainContainerId the id of the container where the fragments should be displayed
      * @param screen          the fragment's parent screen
      */
-    public Flowr(@IdRes int mainContainerId, FlowrScreen screen,
+    public Flowr(@IdRes int mainContainerId, @Nullable FlowrScreen screen,
                  FragmentsResultPublisher resultPublisher) {
         this(mainContainerId, screen, null, null, resultPublisher);
     }
@@ -77,7 +80,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      * @param resultPublisher the result publish to be used to publish results from fragments
      *                        that where opened for results.
      */
-    public Flowr(@IdRes int mainContainerId, FlowrScreen screen, String tagPrefix,
+    public Flowr(@IdRes int mainContainerId, @Nullable FlowrScreen screen, @NonNull String tagPrefix,
                  FragmentsResultPublisher resultPublisher) {
         this(mainContainerId, screen, null, null, tagPrefix, resultPublisher);
     }
@@ -93,8 +96,9 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      * @param resultPublisher the result publish to be used to publish results from fragments
      *                        that where opened for results.
      */
-    public Flowr(@IdRes int mainContainerId, FlowrScreen screen, ToolbarHandler toolbarHandler,
-                 DrawerHandler drawerHandler, FragmentsResultPublisher resultPublisher) {
+    public Flowr(@IdRes int mainContainerId, @Nullable FlowrScreen screen,
+                 @Nullable ToolbarHandler toolbarHandler, @Nullable DrawerHandler drawerHandler,
+                 FragmentsResultPublisher resultPublisher) {
         this(mainContainerId, screen, toolbarHandler, drawerHandler, "#id-", resultPublisher);
     }
 
@@ -111,9 +115,9 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      * @param resultPublisher the result publish to be used to publish results from fragments
      *                        that where opened for results.
      */
-    public Flowr(@IdRes int mainContainerId, FlowrScreen screen, ToolbarHandler toolbarHandler,
-                 DrawerHandler drawerHandler, String tagPrefix,
-                 FragmentsResultPublisher resultPublisher) {
+    public Flowr(@IdRes int mainContainerId, @Nullable FlowrScreen screen,
+                 @Nullable ToolbarHandler toolbarHandler, @Nullable DrawerHandler drawerHandler,
+                 @NonNull String tagPrefix, FragmentsResultPublisher resultPublisher) {
         this.resultPublisher = resultPublisher;
         this.mainContainerId = mainContainerId;
         this.tagPrefix = tagPrefix;
@@ -148,8 +152,10 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
         Bundle requestBundle = arguments.getBundle(KEY_REQUEST_BUNDLE);
 
-        resultResponse.fragmentId = requestBundle.getString(KEY_FRAGMENT_ID);
-        resultResponse.requestCode = requestBundle.getInt(KEY_REQUEST_CODE);
+        if (requestBundle != null) {
+            resultResponse.fragmentId = requestBundle.getString(KEY_FRAGMENT_ID);
+            resultResponse.requestCode = requestBundle.getInt(KEY_REQUEST_CODE);
+        }
 
         return resultResponse;
     }
@@ -160,6 +166,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      *
      * @return the router screen for this router
      */
+    @Nullable
     protected FlowrScreen getRouterScreen() {
         return screen;
     }
@@ -169,7 +176,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      *
      * @param flowrScreen the router screen to be used
      */
-    public void setRouterScreen(FlowrScreen flowrScreen) {
+    public void setRouterScreen(@Nullable FlowrScreen flowrScreen) {
         removeCurrentRouterScreen();
         if (flowrScreen != null) {
             this.screen = flowrScreen;
@@ -194,7 +201,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      *
      * @param toolbarHandler the toolbar handler to be used.
      */
-    public void setToolbarHandler(ToolbarHandler toolbarHandler) {
+    public void setToolbarHandler(@Nullable ToolbarHandler toolbarHandler) {
         removeCurrentToolbarHandler();
 
         if (toolbarHandler != null) {
@@ -215,7 +222,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      *
      * @param drawerHandler the drawer handler to be used.
      */
-    public void setDrawerHandler(DrawerHandler drawerHandler) {
+    public void setDrawerHandler(@Nullable DrawerHandler drawerHandler) {
         this.drawerHandler = drawerHandler;
     }
 
@@ -238,12 +245,16 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      *
      * @return the prefix used for the backstack fragments tag
      */
+    @NonNull
     protected final String getTagPrefix() {
         return tagPrefix;
     }
 
     protected <T extends Fragment & FlowrFragment> void displayFragment(TransactionData<T> data) {
         try {
+            if (screen == null) {
+                return;
+            }
 
             injectDeepLinkInfo(data);
 
@@ -337,6 +348,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         );
     }
 
+    @Nullable
     private Fragment retrieveCurrentFragment() {
         Fragment fragment = null;
 
@@ -369,7 +381,10 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      */
     public void close() {
         overrideBack = true;
-        screen.invokeOnBackPressed();
+
+        if (screen != null) {
+            screen.invokeOnBackPressed();
+        }
     }
 
     /**
@@ -379,6 +394,10 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      * @param n the number of fragments to remove from the back stack
      */
     public void close(int n) {
+        if (screen == null) {
+            return;
+        }
+
         int count = screen.getScreenFragmentManager().getBackStackEntryCount();
         if (count > 1) {
             String id = tagPrefix + (screen.getScreenFragmentManager().getBackStackEntryCount() - n);
@@ -418,9 +437,11 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      * Clears the fragments back stack.
      */
     public void clearBackStack() {
-        screen.getScreenFragmentManager()
-                .popBackStackImmediate(tagPrefix + "0", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        currentFragment = null;
+        if (screen != null) {
+            screen.getScreenFragmentManager()
+                    .popBackStackImmediate(tagPrefix + "0", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            currentFragment = null;
+        }
     }
 
     /**
@@ -452,7 +473,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      * @return true if the current fragment is the home fragment
      */
     public boolean isHomeFragment() {
-        return screen.getScreenFragmentManager().getBackStackEntryCount() == 0;
+        return screen == null || screen.getScreenFragmentManager().getBackStackEntryCount() == 0;
     }
 
     /**
@@ -460,11 +481,12 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      *
      * @return the fragment currently being displayed
      */
+    @Nullable
     public Fragment getCurrentFragment() {
         return currentFragment;
     }
 
-    private void setCurrentFragment(Fragment newFragment) {
+    private void setCurrentFragment(@Nullable Fragment newFragment) {
         if (currentFragment != newFragment) {
             updateVisibilityState(currentFragment, false);
             currentFragment = newFragment;
@@ -486,8 +508,11 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
             navigationBarColor = ((FlowrFragment) currentFragment).getNavigationBarColor();
         }
 
-        screen.setScreenOrientation(screenOrientation);
-        screen.setNavigationBarColor(navigationBarColor);
+        if (screen != null) {
+            screen.onCurrentFragmentChanged(getCurrentFragment());
+            screen.setScreenOrientation(screenOrientation);
+            screen.setNavigationBarColor(navigationBarColor);
+        }
 
         syncToolbarState();
         syncDrawerState();
