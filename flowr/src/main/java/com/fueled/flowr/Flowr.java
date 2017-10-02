@@ -45,11 +45,15 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     private final FragmentsResultPublisher resultPublisher;
     private final int mainContainerId;
 
-    @Nullable private FlowrScreen screen;
-    @Nullable private ToolbarHandler toolbarHandler;
-    @Nullable private DrawerHandler drawerHandler;
+    @Nullable
+    private FlowrScreen screen;
+    @Nullable
+    private ToolbarHandler toolbarHandler;
+    @Nullable
+    private DrawerHandler drawerHandler;
 
-    @Nullable private Fragment currentFragment;
+    @Nullable
+    private Fragment currentFragment;
 
     private boolean overrideBack;
     private String tagPrefix;
@@ -258,10 +262,6 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
             injectDeepLinkInfo(data);
 
-            if (data.isClearBackStack()) {
-                clearBackStack();
-            }
-
             FragmentTransaction transaction = screen.getScreenFragmentManager().beginTransaction();
 
             currentFragment = retrieveCurrentFragment();
@@ -292,6 +292,10 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
             if (data.isSkipBackStack()) {
                 setCurrentFragment(fragment);
+            }
+
+            if (data.isClearBackStack()) {
+                clearBackStack();
             }
 
         } catch (Exception e) {
@@ -438,8 +442,11 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
      */
     public void clearBackStack() {
         if (screen != null) {
-            screen.getScreenFragmentManager()
-                    .popBackStackImmediate(tagPrefix + "0", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            FragmentManager fm = screen.getScreenFragmentManager();
+            int count = fm.getBackStackEntryCount();
+            for (int i = 0; i < count; ++i) {
+                fm.popBackStack();
+            }
             currentFragment = null;
         }
     }
