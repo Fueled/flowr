@@ -1,10 +1,10 @@
 ext {
 
     //app
-    compileSdk = 25
+    compileSdk = 26
     buildTools = "25.0.2"
     minSdk = 16
-    targetSdk = 25
+    targetSdk = 26
     appId = "com.fueled.flowr.sample"
 
     //library
@@ -12,7 +12,7 @@ ext {
     libraryVersion = '1.4.0'
 
     //android libraries
-    supportVersion = '25.1.1'
+    supportVersion = '26.1.0'
 
     // Rx
     rxJavaVersion = '2.0.4'
