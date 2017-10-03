@@ -2,7 +2,7 @@ ext {
 
     //app
     compileSdk = 26
-    buildTools = "25.0.2"
+    buildTools = "26.0.1"
     minSdk = 16
     targetSdk = 26
     appId = "com.fueled.flowr.sample"
