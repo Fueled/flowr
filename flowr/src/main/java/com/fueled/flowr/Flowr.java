@@ -262,18 +262,12 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
                 clearBackStack();
             }
 
-            FragmentTransaction transaction = screen.getScreenFragmentManager().beginTransaction();
-
             currentFragment = retrieveCurrentFragment();
-
-            if (data.isReplaceCurrentFragment() && data.isSkipBackStack() && currentFragment != null) {
-                transaction.remove(currentFragment).commit();
-            }
 
             Fragment fragment = data.getFragmentClass().newInstance();
             fragment.setArguments(data.getArgs());
 
-            transaction = screen.getScreenFragmentManager().beginTransaction();
+            FragmentTransaction transaction = screen.getScreenFragmentManager().beginTransaction();
 
             if (!data.isSkipBackStack()) {
                 String id = tagPrefix + screen.getScreenFragmentManager().getBackStackEntryCount();
@@ -282,7 +276,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
             setCustomAnimations(transaction, data.getEnterAnim(), data.getExitAnim(), data.getPopEnterAnim(), data.getPopExitAnim());
 
-            if (data.isReplaceCurrentFragment() && !data.isSkipBackStack()) {
+            if (data.isReplaceCurrentFragment()) {
                 transaction.replace(mainContainerId, fragment);
             } else {
                 transaction.add(mainContainerId, fragment);
