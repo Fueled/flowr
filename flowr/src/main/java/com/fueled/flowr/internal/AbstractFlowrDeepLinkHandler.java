@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public class AbstractFlowrDeepLinkHandler<T extends Fragment & FlowrFragment>
         implements FlowrDeepLinkHandler {
 
-    private static final String NAMED_PARAM_REGEX = "\\(\\?<([a-zA-Z][a-zA-Z0-9]*)>";
+    private static final String NAMED_PARAM_REGEX = "\\{([a-zA-Z][a-zA-Z0-9]*)\\}";
     private static final Pattern NAMED_PARAM_PATTERN = Pattern.compile(NAMED_PARAM_REGEX);
 
     private final Map<String, Class<? extends T>> linkFragmentMap;
@@ -61,13 +61,13 @@ public class AbstractFlowrDeepLinkHandler<T extends Fragment & FlowrFragment>
         if (m.matches()) {
             Bundle data = getNewBundle();
             data.putString(Flowr.DEEP_LINK_URL, uri.toString());
-            Iterator<String> params = getNamedGroupCandidates(regex).iterator();
+            Iterator<String> params = getNamedGroupCandidates(pattern).iterator();
 
             //start at 1 because 0 is the searched string
             int i = 1;
             while (params.hasNext()) {
-                String bip = params.next();
-                data.putString(bip, m.group(i));
+                String variableName = params.next();
+                data.putString(variableName, m.group(i));
                 i++;
             }
 
@@ -78,7 +78,7 @@ public class AbstractFlowrDeepLinkHandler<T extends Fragment & FlowrFragment>
     }
 
     private String getRegexPattern(String pattern) {
-        return pattern.replaceAll("\\{(.+?)\\}", "(?<$1>\\.+?)");
+        return pattern.replaceAll("\\{(.+?)\\}", "(\\.+?)");
     }
 
     private List<String> getNamedGroupCandidates(String regex) {
@@ -87,8 +87,8 @@ public class AbstractFlowrDeepLinkHandler<T extends Fragment & FlowrFragment>
         Matcher m = NAMED_PARAM_PATTERN.matcher(regex);
 
         while (m.find()) {
-            String test = m.group(1);
-            namedGroups.add(test);
+            String variableName = m.group(1);
+            namedGroups.add(variableName);
         }
 
         return namedGroups;
