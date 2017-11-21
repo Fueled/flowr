@@ -352,7 +352,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         fragment.setEnterTransition(transitionConfig.enter);
         fragment.setSharedElementEnterTransition(transitionConfig.sharedElementEnter);
         fragment.setExitTransition(transitionConfig.exit);
-        fragment.setSharedElementReturnTransition(transitionConfig.sharedElementExit);
+        fragment.setSharedElementReturnTransition(transitionConfig.sharedElementReturn);
     }
 
     /**

@@ -3,6 +3,9 @@ package com.fueled.flowr.sample;
 import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.transition.ChangeBounds;
+import android.transition.Fade;
+import android.transition.Transition;
 import android.view.View;
 import android.widget.Toast;
 
@@ -96,7 +99,7 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
 
     private void displayTransitionFragment() {
         getFlowr().open("/transition")
-                .replaceCurrentFragment(true)
+                .replaceCurrentFragment(true)   // transition works with replace
                 .setTransition(getTransitionConfig(), binding.flowrTextView)
                 .displayFragment();
     }
@@ -104,11 +107,13 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
     @NonNull
     private TransitionConfig getTransitionConfig() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Transition changeBoundsTransition = new ChangeBounds();
+            Transition fadeTransition = new Fade();
             return new TransitionConfig.Builder()
-                    .sharedElementEnter(TransitionConfig.Provider.changeBounds)
-                    .sharedElementExit(TransitionConfig.Provider.changeBounds)
-                    .enter(TransitionConfig.Provider.fade)
-                    .exit(TransitionConfig.Provider.fade)
+                    .sharedElementEnter(changeBoundsTransition)
+                    .sharedElementReturn(changeBoundsTransition)
+                    .enter(fadeTransition)
+                    .exit(fadeTransition)
                     .build();
         }
         return null;

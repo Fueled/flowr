@@ -63,7 +63,8 @@ When displaying a new fragment there are multiple parameters that can be specifi
 * **`skipBackStack`**: specify whether this fragment will be added to the `FragmentManager` back stack or not. The default value for this is `false`.
 * **`clearBackStack`**: specify whether the `FragmentManager` backstack should be cleared before displaying this fragment. The default value used for this is `false`.
 * **`replaceCurrentFragment`**: specify whether this fragment should replace the fragment currently displayed inside the container or just be added over it. The default value used for this is `false`.
-* **`enterAnim`** and **`exitAnim`**: animation resource ID for the enter and exit fragment animation. The default values used here are `R.anim.fragment_enter_anim` and `R.anim.fragment_exit_anim`.
+* **`setCustomTransactionAnimation`**: specify `enterAnim` and `exitAnim` animation resource ID for the enter and exit fragment animation. The default values used here are `R.anim.fragment_enter_anim` and `R.anim.fragment_exit_anim`.
+* **`setTransition`**: specify `transitionConfig` and `sharedElements` for adding custom transitions. For API >= 21, shared elements can also be passed between fragments. Make sure to add `android:transitionName` attribute to the shared views.
 
 finally after we have specified all the parameters we need we can simply call `displayFragment()` to display the fragment.
 

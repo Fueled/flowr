@@ -22,6 +22,7 @@
     <string name="view_pick_nav_color">Pick Navigation Bar Color</string>
     <string name="view_toolbar_visible">Toolbar Visible</string>
     <string name="view_drawer_enabled">Drawer Enabled</string>
+    <string name="transition_text">transitionText</string>
 
 
 </resources>
