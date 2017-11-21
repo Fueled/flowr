@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.view.View;
 
 import com.fueled.flowr.FlowrFragment;
 
@@ -23,6 +24,8 @@ public final class TransactionData<T extends Fragment & FlowrFragment> {
     private int popEnterAnim;
     private int popExitAnim;
     private Intent deepLinkIntent;
+    private View[] sharedElements;
+    private TransitionConfig transitionConfig;
 
     public TransactionData(Class<? extends T> fragmentClass) {
         this(fragmentClass, FragmentTransaction.TRANSIT_NONE, FragmentTransaction.TRANSIT_NONE);
@@ -120,5 +123,21 @@ public final class TransactionData<T extends Fragment & FlowrFragment> {
 
     public void setExitAnim(int exitAnim) {
         this.exitAnim = exitAnim;
+    }
+
+    public View[] getSharedElements() {
+        return sharedElements;
+    }
+
+    public void setSharedElements(View[] sharedElements) {
+        this.sharedElements = sharedElements;
+    }
+
+    public TransitionConfig getTransitionConfig() {
+        return transitionConfig;
+    }
+
+    public void setTransitionConfig(TransitionConfig transitionConfig) {
+        this.transitionConfig = transitionConfig;
     }
 }

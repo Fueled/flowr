@@ -9,10 +9,22 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/flowr_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:padding="4dp"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:transitionName="transitionText"/>
+
         <Button
             android:id="@+id/home_open_view_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:text="@string/open_view_fragment"/>
 
         <Button
@@ -28,6 +40,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/open_first_fragment"/>
+
+        <Button
+            android:id="@+id/home_open_transition_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/open_transition_fragment"/>
 
     </LinearLayout>
 
