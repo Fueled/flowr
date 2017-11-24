@@ -1,17 +1,24 @@
 package com.fueled.flowr.sample;
 
 import android.databinding.DataBindingUtil;
+import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import com.fueled.flowr.NavigationIconType;
 import com.fueled.flowr.sample.core.AbstractFragment;
 import com.fueled.flowr.sample.databinding.FragmentHomeBinding;
+
+import static com.fueled.flowr.sample.core.FragmentResultPublisherImpl.backStackIdentifier;
+import static com.fueled.flowr.sample.core.FragmentResultPublisherImpl.sourceFragmentId;
 
 /**
  * Created by hussein@fueled.com on 13/02/2017.
  * Copyright (c) 2017 Fueled. All rights reserved.
  */
 public class HomeFragment extends AbstractFragment implements View.OnClickListener {
+
+    public static final int RC_STACK = 101;
 
     private FragmentHomeBinding binding;
 
@@ -25,6 +32,7 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
         binding = DataBindingUtil.bind(view);
         binding.homeOpenViewButton.setOnClickListener(this);
         binding.homeOpenLinkButton.setOnClickListener(this);
+        binding.homeOpenFirstButton.setOnClickListener(this);
     }
 
     @Override
@@ -41,8 +49,12 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
     public void onClick(View view) {
         if (view.getId() == R.id.home_open_view_button) {
             displayViewFragment();
-        } else {
+        } else if (view.getId() == R.id.home_open_link_button) {
             displayLinkFragment();
+        } else if (view.getId() == R.id.home_open_first_button) {
+            displayFirstFragment();
+        } else {
+
         }
     }
 
@@ -56,5 +68,20 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
     private void displayLinkFragment() {
         getFlowr().open("/hello")
                 .displayFragment();
+    }
+
+    private void displayFirstFragment() {
+        sourceFragmentId = getFragmentId();
+        backStackIdentifier = getFlowr().open("/first")
+                .displayFragmentForResults(sourceFragmentId, RC_STACK);
+    }
+
+    @Override
+    protected void onFragmentResults(int requestCode, int resultCode, Bundle data) {
+        super.onFragmentResults(requestCode, resultCode, data);
+        if (requestCode == RC_STACK && data.containsKey(SecondFragment.RESULT_FROM_SECOND)) {
+            String resultFromStack = data.getString(SecondFragment.RESULT_FROM_SECOND);
+            Toast.makeText(getContext(), resultFromStack, Toast.LENGTH_SHORT).show();
+        }
     }
 }

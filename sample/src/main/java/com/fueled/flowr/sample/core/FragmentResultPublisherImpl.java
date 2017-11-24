@@ -25,7 +25,7 @@ public class FragmentResultPublisherImpl implements FragmentsResultPublisher {
 
     @Override
     public void publishResult(ResultResponse resultResponse) {
-
+        publishSubject.onNext(resultResponse);
     }
 
     public Disposable observeResultsForFragment(final String fragmentId, Consumer<ResultResponse> consumer) {
@@ -53,4 +53,6 @@ public class FragmentResultPublisherImpl implements FragmentsResultPublisher {
         return instance;
     }
 
+    public static int backStackIdentifier;
+    public static String sourceFragmentId;
 }
