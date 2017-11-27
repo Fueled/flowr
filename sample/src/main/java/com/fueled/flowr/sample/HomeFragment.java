@@ -9,9 +9,6 @@ import com.fueled.flowr.NavigationIconType;
 import com.fueled.flowr.sample.core.AbstractFragment;
 import com.fueled.flowr.sample.databinding.FragmentHomeBinding;
 
-import static com.fueled.flowr.sample.core.FragmentResultPublisherImpl.backStackIdentifier;
-import static com.fueled.flowr.sample.core.FragmentResultPublisherImpl.sourceFragmentId;
-
 /**
  * Created by hussein@fueled.com on 13/02/2017.
  * Copyright (c) 2017 Fueled. All rights reserved.
@@ -19,6 +16,8 @@ import static com.fueled.flowr.sample.core.FragmentResultPublisherImpl.sourceFra
 public class HomeFragment extends AbstractFragment implements View.OnClickListener {
 
     public static final int RC_STACK = 101;
+    public static int backStackIdentifier;
+    public static String targetFragmentId;
 
     private FragmentHomeBinding binding;
 
@@ -71,9 +70,9 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
     }
 
     private void displayFirstFragment() {
-        sourceFragmentId = getFragmentId();
+        targetFragmentId = getFragmentId();
         backStackIdentifier = getFlowr().open("/first")
-                .displayFragmentForResults(sourceFragmentId, RC_STACK);
+                .displayFragmentForResults(targetFragmentId, RC_STACK);
     }
 
     @Override

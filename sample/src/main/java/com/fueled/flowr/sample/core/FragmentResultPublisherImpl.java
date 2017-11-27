@@ -52,7 +52,4 @@ public class FragmentResultPublisherImpl implements FragmentsResultPublisher {
 
         return instance;
     }
-
-    public static int backStackIdentifier;
-    public static String sourceFragmentId;
 }

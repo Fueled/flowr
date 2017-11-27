@@ -10,8 +10,6 @@ import com.fueled.flowr.NavigationIconType;
 import com.fueled.flowr.annotations.DeepLink;
 import com.fueled.flowr.sample.core.AbstractFragment;
 
-import static com.fueled.flowr.sample.core.FragmentResultPublisherImpl.backStackIdentifier;
-
 /**
  * Created by hussein@fueled.com on 18/05/2017.
  * Copyright (c) 2017 Fueled. All rights reserved.
@@ -46,7 +44,7 @@ public class SecondFragment extends AbstractFragment implements View.OnClickList
     public void onClick(View view) {
         getFlowr().closeUptoWithResults(
                 Flowr.getResultsResponse(getArguments(), Activity.RESULT_OK, getBundle()),
-                backStackIdentifier);
+                HomeFragment.backStackIdentifier);
     }
 
     @NonNull

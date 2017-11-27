@@ -56,7 +56,6 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
     private List<FlowrDeepLinkHandler> deepLinkHandlers;
 
-
     /**
      * Constructor to use when creating a new router for an activity
      * that has no toolbar.
@@ -250,6 +249,12 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         return tagPrefix;
     }
 
+    /**
+     *
+     * @param data  TransactionData used to configure fragment transaction
+     * @param <T>   type Fragment & FlowrFragment
+     * @return      id Identifier of the committed transaction.
+     */
     protected <T extends Fragment & FlowrFragment> int displayFragment(TransactionData<T> data) {
         int identifier = -1;
         try {
@@ -288,7 +293,6 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
             if (data.isSkipBackStack()) {
                 setCurrentFragment(fragment);
             }
-
         } catch (Exception e) {
             Log.e(TAG, "Error while displaying fragment.", e);
         }
@@ -406,9 +410,9 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
     /**
      * Closes the current activity if the fragments back stack is empty,
-     * otherwise pop the top n fragments from the stack.
+     * otherwise pop upto fragments with id Identifier from the stack.
      *
-     * @param id Identifier of the stated to be popped.
+     * @param id    Identifier of the committed transaction.
      */
     public void closeUpto(int id) {
         if (screen == null) {
@@ -451,10 +455,10 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
 
     /**
      * Closes the current activity if the fragments back stack is empty,
-     * otherwise pop the top n fragments from the stack and publish the results response.
+     * otherwise pop upto fragments with id Identifier from the stack and publish the results response.
      *
-     * @param resultResponse the results response to be published
-     * @param id Identifier of the stated to be popped.
+     * @param resultResponse    the results response to be published
+     * @param id                Identifier of the committed transaction.
      */
     public void closeUptoWithResults(ResultResponse resultResponse, int id) {
         closeUpto(id);
@@ -778,7 +782,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
         /**
          * Displays the fragment using this builder configurations.
          *
-         * @return id Identifier of the stated to be popped.
+         * @return id Identifier of the committed transaction.
          */
         public int displayFragment() {
             return Flowr.this.displayFragment(data);
@@ -792,7 +796,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
          * @param requestCode this code will be returned in {@link ResultResponse} when the fragment is closed,
          *                    and it can be used to identify the request from which the results were returned.
          *
-         * @return id Identifier of the stated to be popped.
+         * @return id Identifier of the committed transaction.
          */
         public int displayFragmentForResults(String fragmentId, int requestCode) {
             if (!TextUtils.isEmpty(fragmentId)) {
