@@ -3,31 +3,40 @@ package com.fueled.flowr.sample;
 import android.view.View;
 
 import com.fueled.flowr.NavigationIconType;
+import com.fueled.flowr.annotations.DeepLink;
 import com.fueled.flowr.sample.core.AbstractFragment;
 
 /**
  * Created by hussein@fueled.com on 18/05/2017.
  * Copyright (c) 2017 Fueled. All rights reserved.
  */
-public class CategoriesFragment extends AbstractFragment {
+
+@DeepLink(value = "/first")
+public class FirstFragment extends AbstractFragment implements View.OnClickListener {
 
     @Override
     public int getLayoutId() {
-        return R.layout.fragment_categories;
+        return R.layout.fragment_first;
     }
 
     @Override
     protected void setupView(View view) {
-
+        view.findViewById(R.id.add_stack_button).setOnClickListener(this);
     }
 
     @Override
     public String getTitle() {
-        return "Categories Fragment";
+        return "First Fragment";
     }
 
     @Override
     public NavigationIconType getNavigationIconType() {
         return NavigationIconType.HAMBURGER;
+    }
+
+    @Override
+    public void onClick(View view) {
+        getFlowr().open("/second")
+                .displayFragmentForResults(HomeFragment.targetFragmentId, HomeFragment.RC_STACK);
     }
 }

@@ -22,6 +22,13 @@
             android:layout_marginTop="10dp"
             android:text="@string/open_link_fragment"/>
 
+        <Button
+            android:id="@+id/home_open_first_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/open_first_fragment"/>
+
     </LinearLayout>
 
 </layout>

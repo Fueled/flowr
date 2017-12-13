@@ -9,9 +9,12 @@
     <!-- Home Fragment -->
     <string name="open_view_fragment">Open View Fragment</string>
     <string name="open_link_fragment">Open Link Fragment</string>
+    <string name="open_first_fragment">Open First Fragment</string>
 
     <!-- Categories Fragment -->
     <string name="categories_message">Categories Fragment!</string>
+    <string name="first_message">Open Second Fragment</string>
+    <string name="second_message">Return to Home Fragment</string>
 
     <!-- View Fragment -->
     <string name="view_pick_nav_color">Pick Navigation Bar Color</string>
