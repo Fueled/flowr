@@ -2,7 +2,7 @@ package com.fueled.flowr.sample;
 
 import android.databinding.DataBindingUtil;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import android.os.Bundle;
 import android.transition.ChangeBounds;
 import android.transition.Fade;
 import android.transition.Transition;
@@ -104,7 +104,6 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
                 .displayFragment();
     }
 
-    @NonNull
     private TransitionConfig getTransitionConfig() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Transition changeBoundsTransition = new ChangeBounds();
