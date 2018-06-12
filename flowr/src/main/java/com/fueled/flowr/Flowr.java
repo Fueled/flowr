@@ -474,7 +474,7 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
     public void clearBackStack() {
         if (screen != null) {
             screen.getScreenFragmentManager()
-                    .popBackStack(tagPrefix + "0", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             currentFragment = null;
         }
     }
