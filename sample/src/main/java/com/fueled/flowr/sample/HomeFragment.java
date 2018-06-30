@@ -1,11 +1,16 @@
 package com.fueled.flowr.sample;
 
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
+import android.transition.ChangeBounds;
+import android.transition.Fade;
+import android.transition.Transition;
 import android.view.View;
 import android.widget.Toast;
 
 import com.fueled.flowr.NavigationIconType;
+import com.fueled.flowr.internal.TransitionConfig;
 import com.fueled.flowr.sample.core.AbstractFragment;
 import com.fueled.flowr.sample.databinding.FragmentHomeBinding;
 
@@ -32,6 +37,7 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
         binding.homeOpenViewButton.setOnClickListener(this);
         binding.homeOpenLinkButton.setOnClickListener(this);
         binding.homeOpenFirstButton.setOnClickListener(this);
+        binding.homeOpenTransitionButton.setOnClickListener(this);
     }
 
     @Override
@@ -46,14 +52,21 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.home_open_view_button) {
-            displayViewFragment();
-        } else if (view.getId() == R.id.home_open_link_button) {
-            displayLinkFragment();
-        } else if (view.getId() == R.id.home_open_first_button) {
-            displayFirstFragment();
-        } else {
-
+        switch (view.getId()) {
+            case R.id.home_open_view_button:
+                displayViewFragment();
+                break;
+            case R.id.home_open_link_button:
+                displayLinkFragment();
+                break;
+            case R.id.home_open_transition_button:
+                displayTransitionFragment();
+                break;
+            case R.id.home_open_first_button:
+                displayFirstFragment();
+                break;
+            default:
+                break;
         }
     }
 
@@ -82,5 +95,26 @@ public class HomeFragment extends AbstractFragment implements View.OnClickListen
             String resultFromStack = data.getString(SecondFragment.RESULT_FROM_SECOND);
             Toast.makeText(getContext(), resultFromStack, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void displayTransitionFragment() {
+        getFlowr().open("/transition")
+                .replaceCurrentFragment(true)   // transition works with replace
+                .setTransition(getTransitionConfig(), binding.flowrTextView)
+                .displayFragment();
+    }
+
+    private TransitionConfig getTransitionConfig() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Transition changeBoundsTransition = new ChangeBounds();
+            Transition fadeTransition = new Fade();
+            return new TransitionConfig.Builder()
+                    .sharedElementEnter(changeBoundsTransition)
+                    .sharedElementReturn(changeBoundsTransition)
+                    .enter(fadeTransition)
+                    .exit(fadeTransition)
+                    .build();
+        }
+        return null;
     }
 }

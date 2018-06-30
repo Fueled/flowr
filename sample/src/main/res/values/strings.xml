@@ -10,16 +10,19 @@
     <string name="open_view_fragment">Open View Fragment</string>
     <string name="open_link_fragment">Open Link Fragment</string>
     <string name="open_first_fragment">Open First Fragment</string>
+    <string name="open_transition_fragment">Open Transition Fragment</string>
 
     <!-- Categories Fragment -->
     <string name="categories_message">Categories Fragment!</string>
     <string name="first_message">Open Second Fragment</string>
     <string name="second_message">Return to Home Fragment</string>
+    <string name="transition_message">Transition Fragment!</string>
 
     <!-- View Fragment -->
     <string name="view_pick_nav_color">Pick Navigation Bar Color</string>
     <string name="view_toolbar_visible">Toolbar Visible</string>
     <string name="view_drawer_enabled">Drawer Enabled</string>
+    <string name="transition_text">transitionText</string>
 
 
 </resources>

@@ -3,11 +3,13 @@ package com.fueled.flowr;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.AnimRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -18,6 +20,7 @@ import android.view.View;
 import com.fueled.flowr.internal.FlowrDeepLinkHandler;
 import com.fueled.flowr.internal.FlowrDeepLinkInfo;
 import com.fueled.flowr.internal.TransactionData;
+import com.fueled.flowr.internal.TransitionConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -273,6 +276,10 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
             Fragment fragment = data.getFragmentClass().newInstance();
             fragment.setArguments(data.getArgs());
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && data.getTransitionConfig() != null) {
+                setTransitions(fragment, data.getTransitionConfig());
+            }
+
             FragmentTransaction transaction = screen.getScreenFragmentManager().beginTransaction();
 
             if (!data.isSkipBackStack()) {
@@ -286,6 +293,11 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
                 transaction.replace(mainContainerId, fragment);
             } else {
                 transaction.add(mainContainerId, fragment);
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && data.getTransitionConfig() != null &&
+                    data.getSharedElements() != null && data.getSharedElements().length > 0) {
+                addSharedElements(transaction, data.getSharedElements());
             }
 
             identifier = transaction.commit();
@@ -326,6 +338,33 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
                     break;
                 }
             }
+        }
+    }
+
+    /**
+     * Set transitions to the destination fragment from @{@link TransitionConfig}.
+     *
+     * @param fragment          The destination Fragment.
+     * @param transitionConfig  The transition configuration @{@link TransitionConfig}.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void setTransitions(Fragment fragment, TransitionConfig transitionConfig) {
+        fragment.setEnterTransition(transitionConfig.enter);
+        fragment.setSharedElementEnterTransition(transitionConfig.sharedElementEnter);
+        fragment.setExitTransition(transitionConfig.exit);
+        fragment.setSharedElementReturnTransition(transitionConfig.sharedElementReturn);
+    }
+
+    /**
+     * Add shared elements to a Fragment Transaction.
+     *
+     * @param transaction   The transaction that will.
+     * @param views         The shared elements.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void addSharedElements(FragmentTransaction transaction, View[] views) {
+        for (View view : views) {
+            transaction.addSharedElement(view, view.getTransitionName());
         }
     }
 
@@ -769,6 +808,18 @@ public class Flowr implements FragmentManager.OnBackStackChangedListener,
             data.setPopExitAnim(popExitAnim);
             return this;
 
+        }
+
+        /**
+         * Set transition between fragments.
+         *
+         * @param transitionConfig  builder class for configuring fragment transitions
+         * @param sharedElements    array of shared elements
+         */
+        public Builder setTransition(TransitionConfig transitionConfig, View... sharedElements) {
+            data.setTransitionConfig(transitionConfig);
+            data.setSharedElements(sharedElements);
+            return this;
         }
 
         /**
